@@ -1,0 +1,63 @@
+version: 2
+
+models:
+  - name: stg_business_customer
+    description: Staged business customer data with type casts
+    columns:
+      - name: customer_id
+        description: Unique customer identifier (C001..C030)
+        tests:
+          - unique
+          - not_null
+      - name: company_name
+        description: Legal company name
+      - name: legal_form
+        description: Swiss legal form (AG, GmbH, SA, Sàrl)
+      - name: street
+        description: Street address
+      - name: postal_code
+        description: Swiss postal code (PLZ)
+      - name: city
+        description: City name
+      - name: canton
+        description: Swiss canton abbreviation
+      - name: country
+        description: Country code (CH)
+      - name: contact_name
+        description: Primary contact full name
+      - name: contact_email
+        description: Primary contact email address
+      - name: phone
+        description: Phone number in Swiss format
+      - name: is_active
+        description: Whether the customer is currently active
+      - name: created_at
+        description: Date the customer record was created
+
+  - name: stg_customer_contact
+    description: Staged customer contact data with type casts
+    columns:
+      - name: contact_id
+        description: Unique contact identifier (CC001..CC050)
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Foreign key to business_customer
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_business_customer')
+              field: customer_id
+      - name: first_name
+        description: Contact first name
+      - name: last_name
+        description: Contact last name
+      - name: role
+        description: Job role (CEO, CFO, Logistics Manager, Procurement, Warehouse Manager)
+      - name: email
+        description: Contact email address
+      - name: phone
+        description: Contact phone number
+      - name: is_primary
+        description: Whether this is the primary contact for the customer

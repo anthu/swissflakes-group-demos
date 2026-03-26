@@ -1,0 +1,57 @@
+version: 2
+
+models:
+  - name: stg_product
+    description: Staged product data with type casts
+    columns:
+      - name: product_id
+        description: Unique product identifier (P001..P040)
+        tests:
+          - unique
+          - not_null
+      - name: product_name
+        description: Product display name
+      - name: category
+        description: Product category (Electronics, Pharma, Food, Chemicals, Textiles, Machinery)
+      - name: hs_tariff_code
+        description: 8-digit HS customs tariff code
+      - name: weight_kg
+        description: Product weight in kilograms
+      - name: unit_price_chf
+        description: Unit price in Swiss Francs
+      - name: currency
+        description: Currency code (CHF)
+      - name: origin_country
+        description: Country of origin ISO code
+      - name: is_hazardous
+        description: Whether the product is classified as hazardous
+      - name: requires_customs_declaration
+        description: Whether customs declaration is required for import/export
+      - name: created_at
+        description: Date the product record was created
+
+  - name: stg_product_tariff
+    description: Staged product tariff data with type casts
+    columns:
+      - name: tariff_id
+        description: Unique tariff identifier (T001..T040)
+        tests:
+          - unique
+          - not_null
+      - name: product_id
+        description: Foreign key to product
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_product')
+              field: product_id
+      - name: hs_code
+        description: 8-digit HS customs code
+      - name: description
+        description: Tariff line description
+      - name: duty_rate_pct
+        description: Import duty rate percentage
+      - name: vat_rate_pct
+        description: VAT rate percentage (7.7% standard or 2.5% reduced for food/pharma)
+      - name: preferential_rate_pct
+        description: Preferential duty rate under trade agreements

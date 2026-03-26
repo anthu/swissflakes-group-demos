@@ -1,0 +1,23 @@
+name: sfg_enterprise_weather
+version: '1.0.0'
+
+profile: sfg_enterprise_weather
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+macro-paths: ["macros"]
+
+clean-targets:
+  - target
+  - dbt_packages
+
+models:
+  sfg_enterprise_weather:
+    staging:
+      +schema: STG_WEATHER
+      +materialized: view
+    marts:
+      +schema: MART_WEATHER
+      +materialized: table

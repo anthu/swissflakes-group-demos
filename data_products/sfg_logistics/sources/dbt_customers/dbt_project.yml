@@ -1,0 +1,27 @@
+name: sfg_logistics_customers
+version: '1.0.0'
+
+profile: sfg_logistics_customers
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+macro-paths: ["macros"]
+
+clean-targets:
+  - target
+  - dbt_packages
+
+seeds:
+  sfg_logistics_customers:
+    +schema: RAW_CUSTOMERS
+
+models:
+  sfg_logistics_customers:
+    staging:
+      +schema: STG_CUSTOMERS
+      +materialized: view
+    marts:
+      +schema: MART_CUSTOMERS
+      +materialized: table

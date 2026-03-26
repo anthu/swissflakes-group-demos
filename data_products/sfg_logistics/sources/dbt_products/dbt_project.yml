@@ -1,0 +1,27 @@
+name: sfg_logistics_products
+version: '1.0.0'
+
+profile: sfg_logistics_products
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+macro-paths: ["macros"]
+
+clean-targets:
+  - target
+  - dbt_packages
+
+seeds:
+  sfg_logistics_products:
+    +schema: RAW_PRODUCTS
+
+models:
+  sfg_logistics_products:
+    staging:
+      +schema: STG_PRODUCTS
+      +materialized: view
+    marts:
+      +schema: MART_PRODUCTS
+      +materialized: table

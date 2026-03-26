@@ -1,0 +1,33 @@
+version: 2
+
+models:
+  - name: mart_swiss_rail_overview
+    description: Unified Swiss rail operations view combining transport.opendata.ch connections and SBB stationboard actual data
+    columns:
+      - name: departure
+        description: Departure timestamp
+        tests:
+          - not_null
+      - name: station_name
+        description: Station name
+        tests:
+          - not_null
+      - name: line_text
+        description: Line or product designation
+      - name: product
+        description: Transport product category (IC, IR, S-Bahn, etc.)
+      - name: operator
+        description: Rail operator name
+      - name: latitude
+        description: Station latitude (available for transport_opendata source)
+      - name: longitude
+        description: Station longitude (available for transport_opendata source)
+      - name: delay_minutes
+        description: Departure delay in minutes
+      - name: platform
+        description: Departure platform (available for transport_opendata source)
+      - name: data_source
+        description: Source identifier (transport_opendata or sbb_stationboard)
+        tests:
+          - accepted_values:
+              values: ['transport_opendata', 'sbb_stationboard']

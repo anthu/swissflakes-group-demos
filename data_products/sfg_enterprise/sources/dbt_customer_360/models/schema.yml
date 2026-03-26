@@ -1,0 +1,49 @@
+version: 2
+
+sources:
+  - name: CUSTOMERS
+    database: SFG_LOGISTICS
+    schema: MART_CUSTOMERS
+    tables:
+      - name: MART_CUSTOMER_OVERVIEW
+  - name: ORDERS
+    database: SFG_LOGISTICS
+    schema: MART_ORDERS
+    tables:
+      - name: MART_ORDER_SUMMARY
+  - name: MERCHANTS
+    database: SFG_PAY
+    schema: MART_MERCHANTS
+    tables:
+      - name: MART_MERCHANT_OVERVIEW
+  - name: LOCATIONS
+    database: SFG_LOGISTICS
+    schema: MART_LOCATIONS
+    tables:
+      - name: MART_WAREHOUSE_CAPACITY
+
+models:
+  - name: customer_overview
+    description: Full customer view with order stats and merchant links
+    columns:
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+      - name: company_name
+        tests:
+          - not_null
+      - name: legal_form
+      - name: city
+      - name: canton
+      - name: is_active
+      - name: created_at
+      - name: primary_contact_email
+      - name: total_orders
+      - name: total_order_value_chf
+      - name: first_order_date
+      - name: last_order_date
+      - name: merchant_id
+      - name: merchant_name
+      - name: business_type
+      - name: is_merchant

@@ -1,0 +1,42 @@
+version: 2
+
+sources:
+  - name: ORDERS
+    database: SFG_LOGISTICS
+    schema: MART_ORDERS
+    tables:
+      - name: MART_ORDER_SUMMARY
+  - name: TRANSACTIONS
+    database: SFG_PAY
+    schema: MART_TRANSACTIONS
+    tables:
+      - name: MART_TRANSACTION_SUMMARY
+  - name: SHIPMENTS
+    database: SFG_LOGISTICS
+    schema: MART_SHIPMENTS
+    tables:
+      - name: MART_SHIPMENT_TRACKING
+  - name: PRODUCTS
+    database: SFG_LOGISTICS
+    schema: MART_PRODUCTS
+    tables:
+      - name: MART_PRODUCT_CATALOG
+
+models:
+  - name: revenue_by_route
+    description: Revenue and margin analysis by shipping route
+    columns:
+      - name: origin_warehouse
+        tests:
+          - not_null
+      - name: destination_city
+        tests:
+          - not_null
+      - name: total_shipments
+      - name: total_orders
+      - name: total_revenue_chf
+      - name: total_payments_chf
+      - name: total_refunds_chf
+      - name: net_revenue_chf
+      - name: avg_delivery_days
+      - name: avg_order_value_chf

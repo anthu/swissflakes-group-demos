@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: mart_weather_station_catalog
+    description: MeteoSwiss weather station catalog with coordinates for geospatial analysis
+    columns:
+      - name: station_id
+        description: MeteoSwiss station code
+        tests:
+          - unique
+          - not_null
+      - name: station_name
+        description: Station name with code
+        tests:
+          - not_null
+      - name: latitude
+        description: Station latitude (WGS84)
+        tests:
+          - not_null
+      - name: longitude
+        description: Station longitude (WGS84)
+        tests:
+          - not_null
+      - name: last_update
+        description: Timestamp of last data update
+      - name: num_assets
+        description: Number of available CSV data assets

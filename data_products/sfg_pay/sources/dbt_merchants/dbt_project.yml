@@ -1,0 +1,27 @@
+name: sfg_pay_merchants
+version: '1.0.0'
+
+profile: sfg_pay_merchants
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+macro-paths: ["macros"]
+
+clean-targets:
+  - target
+  - dbt_packages
+
+seeds:
+  sfg_pay_merchants:
+    +schema: RAW_MERCHANTS
+
+models:
+  sfg_pay_merchants:
+    staging:
+      +schema: STG_MERCHANTS
+      +materialized: view
+    marts:
+      +schema: MART_MERCHANTS
+      +materialized: table

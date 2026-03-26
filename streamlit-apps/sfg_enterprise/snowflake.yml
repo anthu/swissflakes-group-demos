@@ -1,0 +1,21 @@
+definition_version: 2
+entities:
+  sfg_enterprise_dashboard:
+    type: streamlit
+    identifier:
+      name: SFG_ENTERPRISE_DASHBOARD
+      schema: MART_FULFILLMENT
+      database: SFG_ENTERPRISE
+    query_warehouse: SWISSFLAKES_WH_BI
+    main_file: streamlit_app.py
+    title: "SwissFlakes Enterprise Analytics"
+    comment: "Multi-page analytics dashboard for fulfillment, revenue, and compliance"
+    artifacts:
+      - streamlit_app.py
+      - environment.yml
+      - views/home.py
+      - views/fulfillment.py
+      - views/revenue.py
+      - views/compliance.py
+      - shared/data.py
+      - shared/config.py

@@ -1,0 +1,12 @@
+definition_version: 2
+entities:
+  sfg_enterprise_exploration:
+    type: notebook
+    identifier:
+      name: SFG_ENTERPRISE_EXPLORATION
+      schema: MART_FULFILLMENT
+      database: SFG_ENTERPRISE
+    query_warehouse: SWISSFLAKES_WH_BI
+    notebook_file: notebook.ipynb
+    artifacts:
+      - notebook.ipynb

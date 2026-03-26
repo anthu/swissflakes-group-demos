@@ -1,0 +1,41 @@
+tariff_id,product_id,hs_code,description,duty_rate_pct,vat_rate_pct,preferential_rate_pct
+T001,P001,85011010,Servo motors for industrial automation,0.0,7.7,0.0
+T002,P002,84821010,Ball bearings with bore diameter <= 30mm,3.5,7.7,0.0
+T003,P003,85076000,Lithium-ion battery packs,0.0,7.7,0.0
+T004,P004,18063100,Chocolate containing cocoa >= 70%,0.0,2.5,0.0
+T005,P005,30049099,Medicaments containing paracetamol in dosage form,0.0,2.5,0.0
+T006,P006,52081300,Plain weave cotton fabric >= 100g/m2,5.2,7.7,0.0
+T007,P007,28070010,Sulfuric acid concentrated,0.0,7.7,0.0
+T008,P008,85285900,Flat panel display modules LED,0.0,7.7,0.0
+T009,P009,04069061,Emmental cheese with PDO,0.0,2.5,0.0
+T010,P010,30043100,Medicaments containing insulin,0.0,2.5,0.0
+T011,P011,54024600,Polyester yarn partially oriented,4.8,7.7,0.0
+T012,P012,84122100,Hydraulic power engines and motors linear,0.0,7.7,0.0
+T013,P013,28151100,Sodium hydroxide solid,0.0,7.7,0.0
+T014,P014,85176200,Machines for reception and transmission of data,0.0,7.7,0.0
+T015,P015,08131000,Dried apricots,6.0,2.5,3.0
+T016,P016,30041020,Medicaments containing amoxicillin,0.0,2.5,0.0
+T017,P017,50079020,Woven silk fabric printed,2.0,7.7,0.0
+T018,P018,84561100,Machine tools operated by laser,0.0,7.7,0.0
+T019,P019,29051220,Isopropyl alcohol,0.0,7.7,0.0
+T020,P020,85414020,Photovoltaic cells assembled in modules,0.0,7.7,0.0
+T021,P021,04021019,Milk powder fat content <= 1.5%,0.0,2.5,0.0
+T022,P022,30049035,Medicaments containing ibuprofen topical,2.4,2.5,0.0
+T023,P023,63012090,Blankets of wool not electric,6.5,7.7,3.2
+T024,P024,84818019,Pneumatic valves for pipe and hose systems,1.8,7.7,0.0
+T025,P025,22071000,Undenatured ethyl alcohol >= 80%,0.0,7.7,0.0
+T026,P026,84718000,Units of automatic data processing machines,0.0,7.7,0.0
+T027,P027,04069069,Hard cheese AOP >= 6 months aged,0.0,2.5,0.0
+T028,P028,21069098,Food supplements in dosage form,3.2,2.5,1.6
+T029,P029,63025300,Table linen of linen,5.5,7.7,2.8
+T030,P030,84313900,Parts of conveyor machinery,0.0,7.7,0.0
+T031,P031,28470000,Hydrogen peroxide,0.0,7.7,0.0
+T032,P032,90251980,Electronic temperature measuring instruments,0.0,7.7,0.0
+T033,P033,21011100,Extracts essences concentrates of coffee,4.0,2.5,2.0
+T034,P034,30061010,Sterile surgical suture materials,0.0,2.5,0.0
+T035,P035,52104100,Denim fabric >= 200g/m2,5.2,7.7,2.6
+T036,P036,85015200,AC motors output > 750W <= 75kW,2.0,7.7,0.0
+T037,P037,29181400,Citric acid,0.0,7.7,0.0
+T038,P038,84733080,Parts and accessories for data processing,0.0,7.7,0.0
+T039,P039,19041099,Preparations of cereals obtained by swelling,8.5,2.5,4.2
+T040,P040,90189050,Instruments for measuring blood pressure,0.0,2.5,0.0

@@ -1,0 +1,51 @@
+contact_id,customer_id,first_name,last_name,role,email,phone,is_primary
+CC001,C001,Martin,Keller,CEO,martin.keller@alpina-logistik.ch,+41 44 123 45 67,TRUE
+CC002,C001,Silvia,Berger,CFO,silvia.berger@alpina-logistik.ch,+41 44 123 45 68,FALSE
+CC003,C002,Sandra,Meier,CEO,sandra.meier@bernex-handels.ch,+41 31 234 56 78,TRUE
+CC004,C002,Felix,Gerber,Logistics Manager,felix.gerber@bernex-handels.ch,+41 31 234 56 79,FALSE
+CC005,C003,Thomas,Brunner,CEO,thomas.brunner@zuerich-cargo.ch,+41 44 345 67 89,TRUE
+CC006,C003,Lisa,Frei,Procurement,lisa.frei@zuerich-cargo.ch,+41 44 345 67 90,FALSE
+CC007,C004,Ursula,Fischer,CEO,ursula.fischer@rheinfelden-transport.ch,+41 61 456 78 90,TRUE
+CC008,C004,Beat,Schär,Warehouse Manager,beat.schaer@rheinfelden-transport.ch,+41 61 456 78 91,FALSE
+CC009,C005,Pierre,Dumont,CEO,pierre.dumont@geneve-fret.ch,+41 22 567 89 01,TRUE
+CC010,C005,Monique,Reymond,CFO,monique.reymond@geneve-fret.ch,+41 22 567 89 02,FALSE
+CC011,C006,Andrea,Steiner,CEO,andrea.steiner@luzerner-spedition.ch,+41 41 678 90 12,TRUE
+CC012,C006,Bruno,Amrein,Logistics Manager,bruno.amrein@luzerner-spedition.ch,+41 41 678 90 13,FALSE
+CC013,C007,Roland,Huber,CEO,roland.huber@basler-warehousing.ch,+41 61 789 01 23,TRUE
+CC014,C007,Katrin,Senn,Procurement,katrin.senn@basler-warehousing.ch,+41 61 789 01 24,FALSE
+CC015,C008,Claire,Favre,CEO,claire.favre@lausanne-distribution.ch,+41 21 890 12 34,TRUE
+CC016,C008,Olivier,Grandjean,Warehouse Manager,olivier.grandjean@lausanne-distribution.ch,+41 21 890 12 35,FALSE
+CC017,C009,Peter,Widmer,CEO,peter.widmer@thurgau-verpackung.ch,+41 52 901 23 45,TRUE
+CC018,C010,Barbara,Roth,CEO,barbara.roth@solothurn-express.ch,+41 32 012 34 56,TRUE
+CC019,C010,Werner,Stalder,CFO,werner.stalder@solothurn-express.ch,+41 32 012 34 57,FALSE
+CC020,C011,Daniel,Schmid,CEO,daniel.schmid@winterthur-stahl.ch,+41 52 123 45 67,TRUE
+CC021,C011,Regula,Graf,Logistics Manager,regula.graf@winterthur-stahl.ch,+41 52 123 45 68,FALSE
+CC022,C012,Marc,Blanc,CEO,marc.blanc@fribourg-packaging.ch,+41 26 234 56 78,TRUE
+CC023,C013,Susanne,Weber,CEO,susanne.weber@aargau-pharma.ch,+41 56 345 67 89,TRUE
+CC024,C013,Christian,Vogt,Procurement,christian.vogt@aargau-pharma.ch,+41 56 345 67 90,FALSE
+CC025,C014,Marco,Bernasconi,CEO,marco.bernasconi@tessiner-import.ch,+41 91 456 78 90,TRUE
+CC026,C014,Francesca,Pagani,CFO,francesca.pagani@tessiner-import.ch,+41 91 456 78 91,FALSE
+CC027,C015,Nathalie,Bonvin,CEO,nathalie.bonvin@valais-energie.ch,+41 27 567 89 01,TRUE
+CC028,C016,Klaus,Müller,CEO,klaus.mueller@schaffhauser-technik.ch,+41 52 678 90 12,TRUE
+CC029,C016,Heidi,Bachmann,Warehouse Manager,heidi.bachmann@schaffhauser-technik.ch,+41 52 678 90 13,FALSE
+CC030,C017,Markus,Cavelti,CEO,markus.cavelti@graubuenden-holz.ch,+41 81 789 01 23,TRUE
+CC031,C018,Isabelle,Droz,CEO,isabelle.droz@neuchatel-micro.ch,+41 32 890 12 34,TRUE
+CC032,C018,Thierry,Matile,Logistics Manager,thierry.matile@neuchatel-micro.ch,+41 32 890 12 35,FALSE
+CC033,C019,Hans,Eigenmann,CEO,hans.eigenmann@stgaller-textil.ch,+41 71 901 23 45,TRUE
+CC034,C019,Ruth,Metzger,Procurement,ruth.metzger@stgaller-textil.ch,+41 71 901 23 46,FALSE
+CC035,C020,Stefanie,Baumgartner,CEO,stefanie.baumgartner@zug-fintech.ch,+41 41 012 34 56,TRUE
+CC036,C020,Reto,Wyss,CFO,reto.wyss@zug-fintech.ch,+41 41 012 34 57,FALSE
+CC037,C021,René,Schneider,CEO,rene.schneider@biel-precision.ch,+41 32 123 45 67,TRUE
+CC038,C022,Ruedi,Sutter,CEO,ruedi.sutter@appenzeller-kaeserei.ch,+41 71 234 56 78,TRUE
+CC039,C023,Fritz,Gerber,CEO,fritz.gerber@olten-maschinenbau.ch,+41 62 345 67 89,TRUE
+CC040,C023,Irene,Flückiger,CFO,irene.flueckiger@olten-maschinenbau.ch,+41 62 345 67 90,FALSE
+CC041,C024,Véronique,Lambert,CEO,veronique.lambert@nyon-cosmetiques.ch,+41 22 456 78 90,TRUE
+CC042,C025,Josef,Betschart,CEO,josef.betschart@schwyz-baumaschinen.ch,+41 41 567 89 01,TRUE
+CC043,C026,Erika,Lüthi,CEO,erika.luethi@thun-elektronik.ch,+41 33 678 90 12,TRUE
+CC044,C026,Jürg,Hofer,Logistics Manager,juerg.hofer@thun-elektronik.ch,+41 33 678 90 13,FALSE
+CC045,C027,Michael,Frei,CEO,michael.frei@aarau-recycling.ch,+41 62 789 01 23,TRUE
+CC046,C028,Giulia,Bentivoglio,CEO,giulia.bentivoglio@bellinzona-trading.ch,+41 91 890 12 34,TRUE
+CC047,C028,Luca,Fontana,Procurement,luca.fontana@bellinzona-trading.ch,+41 91 890 12 35,FALSE
+CC048,C029,Lukas,Hartmann,CEO,lukas.hartmann@davos-consulting.ch,+41 81 901 23 45,TRUE
+CC049,C030,Monika,Kessler,CEO,monika.kessler@rapperswil-software.ch,+41 55 012 34 56,TRUE
+CC050,C030,Pascal,Zürcher,Warehouse Manager,pascal.zuercher@rapperswil-software.ch,+41 55 012 34 57,FALSE

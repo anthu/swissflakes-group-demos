@@ -1,0 +1,51 @@
+version: 2
+
+sources:
+  - name: TRANSACTIONS
+    database: SFG_PAY
+    schema: MART_TRANSACTIONS
+    tables:
+      - name: MART_TRANSACTION_SUMMARY
+  - name: ORDERS
+    database: SFG_LOGISTICS
+    schema: MART_ORDERS
+    tables:
+      - name: MART_ORDER_SUMMARY
+  - name: SHIPMENTS
+    database: SFG_LOGISTICS
+    schema: MART_SHIPMENTS
+    tables:
+      - name: MART_SHIPMENT_TRACKING
+  - name: PRODUCTS
+    database: SFG_LOGISTICS
+    schema: MART_PRODUCTS
+    tables:
+      - name: MART_PRODUCT_CATALOG
+  - name: CUSTOMERS
+    database: SFG_LOGISTICS
+    schema: MART_CUSTOMERS
+    tables:
+      - name: MART_CUSTOMER_OVERVIEW
+
+models:
+  - name: transaction_report
+    description: FINMA/BAZG/GwG compliance view for transaction reporting
+    columns:
+      - name: payment_id
+        tests:
+          - not_null
+      - name: order_id
+        tests:
+          - not_null
+      - name: customer_id
+      - name: company_name
+      - name: amount_chf
+      - name: payment_method
+      - name: payment_status
+      - name: is_international
+      - name: requires_aml_check
+      - name: shipment_id
+      - name: requires_customs
+      - name: customs_declaration_id
+      - name: created_at
+      - name: processed_at

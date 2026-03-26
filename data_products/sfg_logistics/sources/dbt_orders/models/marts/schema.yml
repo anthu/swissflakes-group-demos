@@ -1,0 +1,39 @@
+version: 2
+
+models:
+  - name: mart_order_summary
+    description: Order summary aggregating header with line item totals
+    columns:
+      - name: order_id
+        description: Unique order identifier
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Customer identifier (C001..C030)
+        tests:
+          - not_null
+      - name: order_date
+        description: Date the order was placed
+      - name: status
+        description: Order status
+      - name: delivery_street
+        description: Delivery street address
+      - name: delivery_postal_code
+        description: Swiss postal code
+      - name: delivery_city
+        description: Delivery city
+      - name: currency
+        description: Currency code (CHF)
+      - name: warehouse_origin
+        description: Originating warehouse
+      - name: header_total_chf
+        description: Total from order header
+      - name: line_item_count
+        description: Number of line items in the order
+      - name: total_quantity
+        description: Sum of all line item quantities
+      - name: calculated_total_chf
+        description: Sum of line item totals
+      - name: distinct_product_count
+        description: Number of distinct products in the order

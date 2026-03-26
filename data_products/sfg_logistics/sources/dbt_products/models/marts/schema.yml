@@ -1,0 +1,47 @@
+version: 2
+
+models:
+  - name: mart_product_catalog
+    description: Product catalog with tariff and landed cost information
+    columns:
+      - name: product_id
+        description: Unique product identifier
+        tests:
+          - unique
+          - not_null
+      - name: product_name
+        description: Product display name
+      - name: category
+        description: Product category
+      - name: weight_kg
+        description: Product weight in kilograms
+      - name: unit_price_chf
+        description: Unit price in Swiss Francs
+      - name: currency
+        description: Currency code (CHF)
+      - name: origin_country
+        description: Country of origin ISO code
+      - name: is_hazardous
+        description: Whether the product is classified as hazardous
+      - name: requires_customs_declaration
+        description: Whether customs declaration is required
+      - name: created_at
+        description: Date the product record was created
+      - name: tariff_id
+        description: Tariff identifier
+      - name: hs_code
+        description: 8-digit HS customs code
+      - name: tariff_description
+        description: Tariff line description
+      - name: duty_rate_pct
+        description: Import duty rate percentage
+      - name: vat_rate_pct
+        description: VAT rate percentage
+      - name: preferential_rate_pct
+        description: Preferential duty rate under trade agreements
+      - name: duty_amount_chf
+        description: Calculated duty amount in CHF
+      - name: vat_amount_chf
+        description: Calculated VAT amount in CHF
+      - name: total_landed_cost_chf
+        description: Total landed cost including duty and VAT

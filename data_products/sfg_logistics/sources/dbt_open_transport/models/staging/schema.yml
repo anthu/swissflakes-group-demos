@@ -1,0 +1,77 @@
+version: 2
+
+sources:
+  - name: RAW_LOCATIONS
+    database: SFG_LOGISTICS
+    schema: RAW_LOCATIONS
+    tables:
+      - name: TRANSPORT_CONNECTIONS
+
+  - name: RAW_SHIPMENTS
+    database: SFG_LOGISTICS
+    schema: RAW_SHIPMENTS
+    tables:
+      - name: SBB_STATIONBOARD
+
+models:
+  - name: stg_transport_connections
+    description: Flattened Bern-Zurich rail connections from transport.opendata.ch
+    columns:
+      - name: departure
+        description: Scheduled departure timestamp
+        tests:
+          - not_null
+      - name: from_station
+        description: Departure station name
+      - name: to_station
+        description: Arrival station name
+      - name: duration
+        description: Connection duration string (e.g. 00d00:56:00)
+      - name: product
+        description: Train product (IC, IR, S-Bahn etc.)
+      - name: operator
+        description: Train operator (e.g. SBB)
+      - name: category
+        description: Journey category (IC, IR, RE etc.)
+      - name: delay_minutes
+        description: Departure delay in minutes
+      - name: platform
+        description: Departure platform
+      - name: from_latitude
+        description: Departure station latitude
+      - name: from_longitude
+        description: Departure station longitude
+
+  - name: stg_sbb_stationboard
+    description: Flattened Swiss rail actual-data stationboard from SBB open data
+    columns:
+      - name: fahrt_bezeichner
+        description: Unique trip identifier
+        tests:
+          - not_null
+      - name: station_name
+        description: Stop/station name
+        tests:
+          - not_null
+      - name: line_text
+        description: Line designation (e.g. S26, IC2)
+      - name: product
+        description: Transport product type
+      - name: scheduled_departure
+        description: Scheduled departure time
+      - name: scheduled_arrival
+        description: Scheduled arrival time
+      - name: forecast_departure
+        description: Forecast (actual) departure time
+      - name: forecast_arrival
+        description: Forecast (actual) arrival time
+      - name: has_departure_delay
+        description: Whether departure was delayed
+      - name: has_arrival_delay
+        description: Whether arrival was delayed
+      - name: is_cancelled
+        description: Whether the service was cancelled
+      - name: operator_name
+        description: Rail operator name
+      - name: operating_day
+        description: Operating day (Betriebstag)

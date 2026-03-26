@@ -1,0 +1,75 @@
+version: 2
+
+models:
+  - name: stg_shipment
+    description: Staged shipment data with type casts
+    columns:
+      - name: shipment_id
+        description: Unique shipment identifier (S001..S050)
+        tests:
+          - unique
+          - not_null
+      - name: order_id
+        description: Foreign key to order (O001..O100)
+        tests:
+          - not_null
+      - name: vehicle_id
+        description: Foreign key to vehicle (V001..V020)
+        tests:
+          - not_null
+      - name: origin_warehouse
+        description: Origin warehouse city (Basel, Zürich, Bern)
+      - name: destination_city
+        description: Destination city name
+      - name: destination_postal_code
+        description: Destination postal code
+      - name: status
+        description: Shipment status
+        tests:
+          - accepted_values:
+              values: ['CREATED', 'PICKED_UP', 'IN_TRANSIT', 'CUSTOMS_HOLD', 'DELIVERED', 'RETURNED']
+      - name: created_at
+        description: Timestamp when shipment was created
+      - name: shipped_at
+        description: Timestamp when shipment was picked up
+      - name: delivered_at
+        description: Timestamp when shipment was delivered
+      - name: weight_kg
+        description: Shipment weight in kilograms
+      - name: volume_m3
+        description: Shipment volume in cubic metres
+      - name: requires_customs
+        description: Whether customs clearance is required
+      - name: customs_declaration_id
+        description: Customs declaration reference (CD001.. or empty)
+
+  - name: stg_tracking_event
+    description: Staged tracking event data with type casts
+    columns:
+      - name: event_id
+        description: Unique tracking event identifier (TE001..TE150)
+        tests:
+          - unique
+          - not_null
+      - name: shipment_id
+        description: Foreign key to shipment
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_shipment')
+              field: shipment_id
+      - name: event_type
+        description: Type of tracking event
+        tests:
+          - accepted_values:
+              values: ['CREATED', 'PICKED_UP', 'DEPARTED', 'ARRIVED', 'CUSTOMS_CHECK', 'OUT_FOR_DELIVERY', 'DELIVERED']
+      - name: event_timestamp
+        description: Timestamp of the event
+      - name: location_name
+        description: Human-readable location name
+      - name: latitude
+        description: GPS latitude
+      - name: longitude
+        description: GPS longitude
+      - name: notes
+        description: Free-text notes about the event

@@ -1,0 +1,67 @@
+version: 2
+
+models:
+  - name: stg_merchant_account
+    description: Staged merchant account data with type casts
+    columns:
+      - name: merchant_id
+        description: Unique merchant identifier (M001..M030)
+        tests:
+          - unique
+          - not_null
+      - name: merchant_name
+        description: Merchant business name
+      - name: business_type
+        description: Type of business
+        tests:
+          - accepted_values:
+              values: ['RETAIL', 'ECOMMERCE', 'B2B', 'MARKETPLACE']
+      - name: registration_number
+        description: Swiss commercial register number (CHE-XXX.XXX.XXX)
+      - name: bank_account_iban
+        description: Swiss IBAN for settlements
+      - name: settlement_currency
+        description: Settlement currency (CHF)
+      - name: fee_rate_pct
+        description: Transaction fee rate percentage (1.5-3.5)
+      - name: customer_id
+        description: Foreign key to customer (C001..C030)
+        tests:
+          - not_null
+      - name: is_active
+        description: Whether the merchant is currently active
+      - name: onboarded_at
+        description: Date the merchant was onboarded
+
+  - name: stg_payout
+    description: Staged payout data with type casts
+    columns:
+      - name: payout_id
+        description: Unique payout identifier (PO001..PO060)
+        tests:
+          - unique
+          - not_null
+      - name: merchant_id
+        description: Foreign key to merchant
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_merchant_account')
+              field: merchant_id
+      - name: period_start
+        description: Start of payout period
+      - name: period_end
+        description: End of payout period
+      - name: gross_amount_chf
+        description: Gross transaction volume in CHF
+      - name: fee_amount_chf
+        description: Fee amount deducted in CHF
+      - name: net_amount_chf
+        description: Net payout amount in CHF
+      - name: status
+        description: Payout status
+        tests:
+          - accepted_values:
+              values: ['CALCULATED', 'APPROVED', 'PAID']
+      - name: paid_at
+        description: Date the payout was made

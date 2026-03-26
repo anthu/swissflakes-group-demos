@@ -1,0 +1,41 @@
+version: 2
+
+models:
+  - name: mart_customer_overview
+    description: Customer overview joining business customers with their primary contact
+    columns:
+      - name: customer_id
+        description: Unique customer identifier
+        tests:
+          - unique
+          - not_null
+      - name: company_name
+        description: Legal company name
+      - name: legal_form
+        description: Swiss legal form (AG, GmbH, SA, Sàrl)
+      - name: street
+        description: Street address
+      - name: postal_code
+        description: Swiss postal code (PLZ)
+      - name: city
+        description: City name
+      - name: canton
+        description: Swiss canton abbreviation
+      - name: country
+        description: Country code (CH)
+      - name: is_active
+        description: Whether the customer is currently active
+      - name: created_at
+        description: Date the customer record was created
+      - name: primary_contact_id
+        description: Contact ID of the primary contact
+      - name: primary_contact_first_name
+        description: First name of the primary contact
+      - name: primary_contact_last_name
+        description: Last name of the primary contact
+      - name: primary_contact_role
+        description: Job role of the primary contact
+      - name: primary_contact_email
+        description: Email of the primary contact
+      - name: primary_contact_phone
+        description: Phone number of the primary contact

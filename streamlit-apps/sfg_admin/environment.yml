@@ -1,0 +1,7 @@
+name: sfg_admin_dashboard
+channels:
+  - snowflake
+dependencies:
+  - streamlit=1.52.2
+  - snowflake-snowpark-python=1.47.0
+  - plotly=6.6.0

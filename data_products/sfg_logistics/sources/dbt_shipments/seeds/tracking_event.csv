@@ -1,0 +1,151 @@
+event_id,shipment_id,event_type,event_timestamp,location_name,latitude,longitude,notes
+TE001,S001,CREATED,2024-01-15 08:00:00,Basel Warehouse,47.5596,7.5886,Order received and shipment created
+TE002,S001,PICKED_UP,2024-01-15 09:30:00,Basel Warehouse,47.5596,7.5886,Package picked up by driver
+TE003,S001,DEPARTED,2024-01-15 09:45:00,Basel,47.5596,7.5886,Departed Basel facility
+TE004,S001,ARRIVED,2024-01-15 13:00:00,Zürich Hub,47.3769,8.5417,Arrived at Zürich distribution hub
+TE005,S001,OUT_FOR_DELIVERY,2024-01-15 13:30:00,Zürich,47.3769,8.5417,Out for final delivery
+TE006,S001,DELIVERED,2024-01-15 14:00:00,Zürich,47.3744,8.5410,Delivered to recipient
+TE007,S002,CREATED,2024-01-16 07:30:00,Zürich Warehouse,47.3769,8.5417,Order received and shipment created
+TE008,S002,PICKED_UP,2024-01-16 08:45:00,Zürich Warehouse,47.3769,8.5417,Package picked up by driver
+TE009,S002,DEPARTED,2024-01-16 09:00:00,Zürich,47.3769,8.5417,Departed Zürich facility
+TE010,S002,ARRIVED,2024-01-16 11:30:00,Bern Hub,46.9480,7.4474,Arrived at Bern hub
+TE011,S002,OUT_FOR_DELIVERY,2024-01-16 12:00:00,Bern,46.9480,7.4474,Out for final delivery
+TE012,S002,DELIVERED,2024-01-16 12:30:00,Bern,46.9481,7.4480,Delivered to recipient
+TE013,S003,CREATED,2024-01-18 09:00:00,Bern Warehouse,46.9480,7.4474,Order received and shipment created
+TE014,S003,PICKED_UP,2024-01-18 10:15:00,Bern Warehouse,46.9480,7.4474,Package picked up by driver
+TE015,S003,DEPARTED,2024-01-18 10:30:00,Bern,46.9480,7.4474,Departed Bern facility
+TE016,S003,ARRIVED,2024-01-18 14:00:00,Lausanne Hub,46.5197,6.6323,Arrived at Lausanne hub
+TE017,S003,OUT_FOR_DELIVERY,2024-01-18 14:30:00,Lausanne,46.5197,6.6323,Out for final delivery
+TE018,S003,DELIVERED,2024-01-18 15:00:00,Lausanne,46.5191,6.6322,Delivered to recipient
+TE019,S004,CREATED,2024-01-20 06:00:00,Basel Warehouse,47.5596,7.5886,Order received and shipment created
+TE020,S004,PICKED_UP,2024-01-20 07:30:00,Basel Warehouse,47.5596,7.5886,Package picked up by driver
+TE021,S004,DEPARTED,2024-01-20 07:45:00,Basel,47.5596,7.5886,Departed Basel facility
+TE022,S004,ARRIVED,2024-01-20 11:00:00,Bern Hub,46.9480,7.4474,Transit stop at Bern hub
+TE023,S004,DEPARTED,2024-01-20 11:30:00,Bern,46.9480,7.4474,Departed Bern hub
+TE024,S004,ARRIVED,2024-01-20 15:00:00,Genève Hub,46.2044,6.1432,Arrived at Genève hub
+TE025,S004,OUT_FOR_DELIVERY,2024-01-20 15:30:00,Genève,46.2044,6.1432,Out for final delivery
+TE026,S004,DELIVERED,2024-01-20 16:00:00,Genève,46.2050,6.1440,Delivered to recipient
+TE027,S005,CREATED,2024-01-22 08:30:00,Zürich Warehouse,47.3769,8.5417,Order received and shipment created
+TE028,S005,PICKED_UP,2024-01-22 10:00:00,Zürich Warehouse,47.3769,8.5417,Package picked up by driver
+TE029,S005,DEPARTED,2024-01-22 10:15:00,Zürich,47.3769,8.5417,Departed Zürich facility
+TE030,S005,ARRIVED,2024-01-22 17:00:00,Lugano Hub,46.0037,8.9511,Arrived at Lugano hub
+TE031,S005,OUT_FOR_DELIVERY,2024-01-22 17:30:00,Lugano,46.0037,8.9511,Out for final delivery
+TE032,S005,DELIVERED,2024-01-22 18:00:00,Lugano,46.0040,8.9515,Delivered to recipient
+TE033,S006,CREATED,2024-01-24 07:00:00,Basel Warehouse,47.5596,7.5886,Order received and shipment created
+TE034,S006,PICKED_UP,2024-01-24 08:30:00,Basel Warehouse,47.5596,7.5886,Package picked up by driver
+TE035,S006,DEPARTED,2024-01-24 08:45:00,Basel,47.5596,7.5886,Departed Basel for international delivery
+TE036,S006,CUSTOMS_CHECK,2024-01-24 09:30:00,Basel Border,47.5884,7.5928,Customs declaration CD001 submitted
+TE037,S006,ARRIVED,2024-01-24 13:00:00,Konstanz,47.6603,9.1759,Arrived at Konstanz
+TE038,S006,OUT_FOR_DELIVERY,2024-01-24 13:30:00,Konstanz,47.6603,9.1759,Out for final delivery
+TE039,S006,DELIVERED,2024-01-24 14:00:00,Konstanz,47.6610,9.1765,Delivered to recipient
+TE040,S007,CREATED,2024-01-26 08:00:00,Zürich Warehouse,47.3769,8.5417,Order received and shipment created
+TE041,S007,PICKED_UP,2024-01-26 09:15:00,Zürich Warehouse,47.3769,8.5417,Package picked up by driver
+TE042,S007,CUSTOMS_CHECK,2024-01-26 10:30:00,St. Margrethen Border,47.4533,9.6383,Customs declaration CD002 submitted
+TE043,S007,ARRIVED,2024-01-26 12:30:00,Feldkirch,47.2333,9.6000,Arrived at Feldkirch
+TE044,S007,DELIVERED,2024-01-26 13:30:00,Feldkirch,47.2340,9.6010,Delivered to recipient
+TE045,S008,CREATED,2024-01-28 09:30:00,Bern Warehouse,46.9480,7.4474,Order received and shipment created
+TE046,S008,PICKED_UP,2024-01-28 10:45:00,Bern Warehouse,46.9480,7.4474,Package picked up by driver
+TE047,S008,DEPARTED,2024-01-28 11:00:00,Bern,46.9480,7.4474,Departed Bern facility
+TE048,S008,ARRIVED,2024-01-28 13:30:00,Luzern Hub,47.0502,8.3093,Arrived at Luzern hub
+TE049,S008,DELIVERED,2024-01-28 14:00:00,Luzern,47.0505,8.3098,Delivered to recipient
+TE050,S009,CREATED,2024-01-30 07:00:00,Basel Warehouse,47.5596,7.5886,Order received and shipment created
+TE051,S009,PICKED_UP,2024-01-30 08:30:00,Basel Warehouse,47.5596,7.5886,Package picked up by driver
+TE052,S009,DEPARTED,2024-01-30 08:45:00,Basel,47.5596,7.5886,Departed Basel facility
+TE053,S009,ARRIVED,2024-01-30 12:00:00,Zürich Hub,47.3769,8.5417,Transit stop at Zürich
+TE054,S009,DEPARTED,2024-01-30 12:30:00,Zürich,47.3769,8.5417,Departed Zürich hub
+TE055,S009,ARRIVED,2024-01-30 14:30:00,St. Gallen,47.4245,9.3767,Arrived at St. Gallen
+TE056,S009,DELIVERED,2024-01-30 15:00:00,St. Gallen,47.4250,9.3772,Delivered to recipient
+TE057,S010,CREATED,2024-02-01 08:00:00,Zürich Warehouse,47.3769,8.5417,Order received and shipment created
+TE058,S010,PICKED_UP,2024-02-01 08:45:00,Zürich Warehouse,47.3769,8.5417,Package picked up by driver
+TE059,S010,DELIVERED,2024-02-01 11:00:00,Winterthur,47.4984,8.7236,Delivered to recipient
+TE060,S011,CREATED,2024-02-03 09:00:00,Bern Warehouse,46.9480,7.4474,Order received and shipment created
+TE061,S011,PICKED_UP,2024-02-03 09:45:00,Bern Warehouse,46.9480,7.4474,Package picked up by driver
+TE062,S011,DELIVERED,2024-02-03 12:00:00,Thun,46.7580,7.6280,Delivered to recipient
+TE063,S012,CREATED,2024-02-05 06:30:00,Basel Warehouse,47.5596,7.5886,Order received and shipment created
+TE064,S012,PICKED_UP,2024-02-05 08:00:00,Basel Warehouse,47.5596,7.5886,Package picked up by driver
+TE065,S012,CUSTOMS_CHECK,2024-02-05 09:00:00,Basel Border,47.5884,7.5928,Customs declaration CD003 submitted
+TE066,S012,ARRIVED,2024-02-05 13:30:00,Freiburg im Breisgau,47.9990,7.8421,Arrived at destination
+TE067,S012,DELIVERED,2024-02-05 14:30:00,Freiburg im Breisgau,47.9995,7.8425,Delivered to recipient
+TE068,S013,CREATED,2024-02-07 08:30:00,Zürich Warehouse,47.3769,8.5417,Order received and shipment created
+TE069,S013,PICKED_UP,2024-02-07 10:00:00,Zürich Warehouse,47.3769,8.5417,Package picked up by driver
+TE070,S013,DEPARTED,2024-02-07 10:15:00,Zürich,47.3769,8.5417,Departed Zürich facility
+TE071,S013,ARRIVED,2024-02-07 15:00:00,Chur,46.8499,9.5329,Arrived at Chur
+TE072,S013,DELIVERED,2024-02-07 16:00:00,Chur,46.8505,9.5335,Delivered to recipient
+TE073,S014,CREATED,2024-02-09 09:00:00,Bern Warehouse,46.9480,7.4474,Order received and shipment created
+TE074,S014,PICKED_UP,2024-02-09 09:45:00,Bern Warehouse,46.9480,7.4474,Package picked up by driver
+TE075,S014,DELIVERED,2024-02-09 12:30:00,Fribourg,46.8065,7.1620,Delivered to recipient
+TE076,S015,CREATED,2024-02-11 07:30:00,Basel Warehouse,47.5596,7.5886,Order received and shipment created
+TE077,S015,PICKED_UP,2024-02-11 08:30:00,Basel Warehouse,47.5596,7.5886,Package picked up by driver
+TE078,S015,DELIVERED,2024-02-11 11:00:00,Aarau,47.3925,8.0444,Delivered to recipient
+TE079,S016,CREATED,2024-02-13 08:00:00,Zürich Warehouse,47.3769,8.5417,Order received and shipment created
+TE080,S016,PICKED_UP,2024-02-13 09:00:00,Zürich Warehouse,47.3769,8.5417,Package picked up by driver
+TE081,S016,DELIVERED,2024-02-13 12:00:00,Schaffhausen,47.6960,8.6340,Delivered to recipient
+TE082,S017,CREATED,2024-02-15 06:00:00,Basel Warehouse,47.5596,7.5886,Order received and shipment created
+TE083,S017,PICKED_UP,2024-02-15 07:30:00,Basel Warehouse,47.5596,7.5886,Package picked up by driver
+TE084,S017,CUSTOMS_CHECK,2024-02-15 08:30:00,Basel Border,47.5884,7.5928,Customs declaration CD004 submitted
+TE085,S017,ARRIVED,2024-02-15 12:00:00,Mulhouse,47.7508,7.3359,Arrived at Mulhouse
+TE086,S017,DELIVERED,2024-02-15 13:00:00,Mulhouse,47.7512,7.3363,Delivered to recipient
+TE087,S018,CREATED,2024-02-17 09:30:00,Bern Warehouse,46.9480,7.4474,Order received and shipment created
+TE088,S018,PICKED_UP,2024-02-17 10:15:00,Bern Warehouse,46.9480,7.4474,Package picked up by driver
+TE089,S018,DELIVERED,2024-02-17 12:30:00,Solothurn,47.2088,7.5371,Delivered to recipient
+TE090,S019,CREATED,2024-02-19 08:00:00,Zürich Warehouse,47.3769,8.5417,Order received and shipment created
+TE091,S019,PICKED_UP,2024-02-19 08:45:00,Zürich Warehouse,47.3769,8.5417,Package picked up by driver
+TE092,S019,DELIVERED,2024-02-19 11:00:00,Baden,47.4734,8.3066,Delivered to recipient
+TE093,S020,CREATED,2024-02-21 07:00:00,Basel Warehouse,47.5596,7.5886,Order received and shipment created
+TE094,S020,PICKED_UP,2024-02-21 07:45:00,Basel Warehouse,47.5596,7.5886,Package picked up by driver
+TE095,S020,DELIVERED,2024-02-21 10:30:00,Olten,47.3522,7.9069,Delivered to recipient
+TE096,S021,CREATED,2024-02-23 08:30:00,Zürich Warehouse,47.3769,8.5417,Order received and shipment created
+TE097,S021,PICKED_UP,2024-02-23 09:30:00,Zürich Warehouse,47.3769,8.5417,Package picked up by driver
+TE098,S021,DELIVERED,2024-02-23 12:00:00,Rapperswil-Jona,47.2266,8.8184,Delivered to recipient
+TE099,S031,CREATED,2024-03-15 06:00:00,Bern Warehouse,46.9480,7.4474,Order received and shipment created
+TE100,S031,PICKED_UP,2024-03-15 07:30:00,Bern Warehouse,46.9480,7.4474,Package picked up by driver
+TE101,S031,DEPARTED,2024-03-15 07:45:00,Bern,46.9480,7.4474,Departed Bern facility
+TE102,S031,ARRIVED,2024-03-15 12:00:00,Visp,46.2938,7.8834,Transit stop at Visp
+TE103,S032,CREATED,2024-03-17 07:00:00,Basel Warehouse,47.5596,7.5886,Order received and shipment created
+TE104,S032,PICKED_UP,2024-03-17 08:30:00,Basel Warehouse,47.5596,7.5886,Package picked up by driver
+TE105,S032,DEPARTED,2024-03-17 08:45:00,Basel,47.5596,7.5886,Departed Basel facility
+TE106,S032,ARRIVED,2024-03-17 14:00:00,Luzern Hub,47.0502,8.3093,Transit stop at Luzern
+TE107,S033,CREATED,2024-03-19 08:00:00,Zürich Warehouse,47.3769,8.5417,Order received and shipment created
+TE108,S033,PICKED_UP,2024-03-19 09:30:00,Zürich Warehouse,47.3769,8.5417,Package picked up by driver
+TE109,S033,DEPARTED,2024-03-19 09:45:00,Zürich,47.3769,8.5417,Departed Zürich facility
+TE110,S034,CREATED,2024-03-20 09:00:00,Bern Warehouse,46.9480,7.4474,Order received and shipment created
+TE111,S034,PICKED_UP,2024-03-20 10:00:00,Bern Warehouse,46.9480,7.4474,Package picked up by driver
+TE112,S034,DEPARTED,2024-03-20 10:15:00,Bern,46.9480,7.4474,Departed Bern facility
+TE113,S035,CREATED,2024-03-21 07:30:00,Basel Warehouse,47.5596,7.5886,Order received and shipment created
+TE114,S035,PICKED_UP,2024-03-21 08:15:00,Basel Warehouse,47.5596,7.5886,Package picked up by driver
+TE115,S035,DEPARTED,2024-03-21 08:30:00,Basel,47.5596,7.5886,Departed Basel facility
+TE116,S036,CREATED,2024-03-22 08:00:00,Zürich Warehouse,47.3769,8.5417,Order received and shipment created
+TE117,S036,PICKED_UP,2024-03-22 09:00:00,Zürich Warehouse,47.3769,8.5417,Package picked up by driver
+TE118,S037,CREATED,2024-03-22 09:30:00,Bern Warehouse,46.9480,7.4474,Order received and shipment created
+TE119,S037,PICKED_UP,2024-03-22 10:30:00,Bern Warehouse,46.9480,7.4474,Package picked up by driver
+TE120,S038,CREATED,2024-03-22 06:00:00,Basel Warehouse,47.5596,7.5886,Order received and shipment created
+TE121,S038,PICKED_UP,2024-03-22 07:30:00,Basel Warehouse,47.5596,7.5886,Package picked up by driver
+TE122,S038,CUSTOMS_CHECK,2024-03-22 08:30:00,Basel Border,47.5884,7.5928,Customs declaration CD006 submitted - awaiting clearance
+TE123,S039,CREATED,2024-03-23 08:00:00,Zürich Warehouse,47.3769,8.5417,Order received and shipment created
+TE124,S039,PICKED_UP,2024-03-23 08:45:00,Zürich Warehouse,47.3769,8.5417,Package picked up by driver
+TE125,S040,CREATED,2024-03-23 09:00:00,Bern Warehouse,46.9480,7.4474,Order received and shipment created
+TE126,S040,PICKED_UP,2024-03-23 09:45:00,Bern Warehouse,46.9480,7.4474,Package picked up by driver
+TE127,S041,CREATED,2024-03-23 14:00:00,Basel Warehouse,47.5596,7.5886,Order received and shipment created
+TE128,S042,CREATED,2024-03-23 14:30:00,Zürich Warehouse,47.3769,8.5417,Order received and shipment created
+TE129,S043,CREATED,2024-03-23 15:00:00,Bern Warehouse,46.9480,7.4474,Order received and shipment created
+TE130,S044,CREATED,2024-03-24 07:00:00,Basel Warehouse,47.5596,7.5886,Order received and shipment created
+TE131,S045,CREATED,2024-03-24 07:30:00,Zürich Warehouse,47.3769,8.5417,Order received and shipment created
+TE132,S046,CREATED,2024-02-10 08:00:00,Basel Warehouse,47.5596,7.5886,Order received and shipment created
+TE133,S046,PICKED_UP,2024-02-10 09:30:00,Basel Warehouse,47.5596,7.5886,Package picked up by driver
+TE134,S046,CUSTOMS_CHECK,2024-02-10 10:30:00,Chiasso Border,45.8328,9.0296,Customs declaration CD008 submitted
+TE135,S046,ARRIVED,2024-02-10 14:00:00,Chiasso,45.8328,9.0296,Arrived at Chiasso - refused by recipient
+TE136,S047,CREATED,2024-02-20 08:30:00,Zürich Warehouse,47.3769,8.5417,Order received and shipment created
+TE137,S047,PICKED_UP,2024-02-20 09:45:00,Zürich Warehouse,47.3769,8.5417,Package picked up by driver
+TE138,S047,DEPARTED,2024-02-20 10:00:00,Zürich,47.3769,8.5417,Departed Zürich facility
+TE139,S047,ARRIVED,2024-02-20 14:00:00,Appenzell,47.3310,9.4079,Arrived at Appenzell - wrong address
+TE140,S048,CREATED,2024-03-01 09:00:00,Bern Warehouse,46.9480,7.4474,Order received and shipment created
+TE141,S048,PICKED_UP,2024-03-01 10:15:00,Bern Warehouse,46.9480,7.4474,Package picked up by driver
+TE142,S048,DEPARTED,2024-03-01 10:30:00,Bern,46.9480,7.4474,Departed Bern facility
+TE143,S048,ARRIVED,2024-03-01 14:00:00,Lausanne Hub,46.5197,6.6323,Transit stop at Lausanne
+TE144,S048,DELIVERED,2024-03-01 15:00:00,Nyon,46.3832,6.2348,Delivered to recipient
+TE145,S049,CREATED,2024-03-10 07:00:00,Basel Warehouse,47.5596,7.5886,Order received and shipment created
+TE146,S049,PICKED_UP,2024-03-10 08:00:00,Basel Warehouse,47.5596,7.5886,Package picked up by driver
+TE147,S049,DELIVERED,2024-03-10 11:00:00,Brugg,47.4862,8.2076,Delivered to recipient
+TE148,S050,CREATED,2024-03-22 08:00:00,Zürich Warehouse,47.3769,8.5417,Order received and shipment created
+TE149,S050,PICKED_UP,2024-03-22 09:30:00,Zürich Warehouse,47.3769,8.5417,Package picked up by driver
+TE150,S050,DEPARTED,2024-03-22 09:45:00,Zürich,47.3769,8.5417,Departed Zürich for Kreuzlingen

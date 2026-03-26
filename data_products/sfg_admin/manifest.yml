@@ -1,0 +1,31 @@
+manifest_version: 2
+type: DCM_PROJECT
+
+default_target: PROD
+
+templating:
+  defaults:
+    dp_type: "PLATFORM"
+    dp_name: "SFG_ADMIN"
+    dp_description: "SwissFlakes Group platform administration - warehouses, governance tags, and RBAC"
+
+  configurations:
+    DEV:
+      env_suffix: "_DEV"
+    PROD:
+      env_suffix: ""
+
+targets:
+  DEV:
+    account_identifier: "{{ env_var('SNOWFLAKE_ACCOUNT_DEV') }}"
+    project_name: 'SFG_ADMIN_DEV.DCM.PLATFORM'
+    project_owner: ACCOUNTADMIN
+    project_comment: "{{dp_type}}: {{dp_description}}"
+    templating_config: DEV
+
+  PROD:
+    account_identifier: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+    project_name: 'SFG_ADMIN.DCM.PLATFORM'
+    project_owner: SWISSFLAKES_PLATFORM_ADMIN
+    project_comment: "{{dp_type}}: {{dp_description}}"
+    templating_config: PROD

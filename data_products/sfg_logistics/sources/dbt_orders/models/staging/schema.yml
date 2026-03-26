@@ -1,0 +1,63 @@
+version: 2
+
+models:
+  - name: stg_order_header
+    description: Staged order header data with type casts
+    columns:
+      - name: order_id
+        description: Unique order identifier (O001..O100)
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Foreign key to customer (C001..C030)
+        tests:
+          - not_null
+      - name: order_date
+        description: Date the order was placed
+      - name: status
+        description: Order status (PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED)
+        tests:
+          - accepted_values:
+              values: ['PENDING', 'CONFIRMED', 'SHIPPED', 'DELIVERED', 'CANCELLED']
+      - name: delivery_street
+        description: Delivery street address
+      - name: delivery_postal_code
+        description: Swiss postal code (PLZ)
+      - name: delivery_city
+        description: Delivery city
+      - name: total_amount_chf
+        description: Total order amount in CHF
+      - name: currency
+        description: Currency code (CHF)
+      - name: warehouse_origin
+        description: Originating warehouse (Basel, Zürich, Bern)
+        tests:
+          - accepted_values:
+              values: ['Basel', 'Zürich', 'Bern']
+
+  - name: stg_order_line_item
+    description: Staged order line item data with type casts
+    columns:
+      - name: line_item_id
+        description: Unique line item identifier (LI001..LI250)
+        tests:
+          - unique
+          - not_null
+      - name: order_id
+        description: Foreign key to order header
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_order_header')
+              field: order_id
+      - name: product_id
+        description: Foreign key to product (P001..P040)
+        tests:
+          - not_null
+      - name: quantity
+        description: Quantity ordered
+      - name: unit_price_chf
+        description: Unit price in CHF
+      - name: line_total_chf
+        description: Line total in CHF (quantity * unit_price)

@@ -1,0 +1,27 @@
+name: sfg_logistics_orders
+version: '1.0.0'
+
+profile: sfg_logistics_orders
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+macro-paths: ["macros"]
+
+clean-targets:
+  - target
+  - dbt_packages
+
+seeds:
+  sfg_logistics_orders:
+    +schema: RAW_ORDERS
+
+models:
+  sfg_logistics_orders:
+    staging:
+      +schema: STG_ORDERS
+      +materialized: view
+    marts:
+      +schema: MART_ORDERS
+      +materialized: table

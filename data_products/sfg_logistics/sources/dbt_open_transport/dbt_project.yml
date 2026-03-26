@@ -1,0 +1,23 @@
+name: sfg_logistics_open_transport
+version: '1.0.0'
+
+profile: sfg_logistics_open_transport
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+macro-paths: ["macros"]
+
+clean-targets:
+  - target
+  - dbt_packages
+
+models:
+  sfg_logistics_open_transport:
+    staging:
+      +schema: STG_OPEN_TRANSPORT
+      +materialized: view
+    marts:
+      +schema: MART_OPEN_TRANSPORT
+      +materialized: table

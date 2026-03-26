@@ -1,0 +1,22 @@
+name: sfg_enterprise_compliance
+version: '1.0.0'
+
+profile: sfg_enterprise_compliance
+
+model-paths: ["models"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+macro-paths: ["macros"]
+
+clean-targets:
+  - target
+  - dbt_packages
+
+models:
+  sfg_enterprise_compliance:
+    marts:
+      +schema: MART_COMPLIANCE
+      +materialized: table
+    semantic_views:
+      +schema: MART_COMPLIANCE
+      +materialized: semantic_view

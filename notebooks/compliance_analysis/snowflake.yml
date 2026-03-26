@@ -1,0 +1,12 @@
+definition_version: 2
+entities:
+  compliance_analysis:
+    type: notebook
+    identifier:
+      name: COMPLIANCE_ANALYSIS
+      schema: MART_COMPLIANCE
+      database: SFG_ENTERPRISE
+    query_warehouse: SWISSFLAKES_WH_COMPLIANCE
+    notebook_file: notebook.ipynb
+    artifacts:
+      - notebook.ipynb
