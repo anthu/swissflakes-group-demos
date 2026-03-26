@@ -1,0 +1,47 @@
+version: 2
+
+models:
+  - name: mart_fleet_status
+    description: Vehicle overview joining each vehicle with its latest GPS position and total position count
+    columns:
+      - name: vehicle_id
+        description: Unique vehicle identifier
+        tests:
+          - unique
+          - not_null
+      - name: plate_number
+        description: Swiss licence plate number
+      - name: vehicle_type
+        description: Type of vehicle
+      - name: make
+        description: Vehicle manufacturer
+      - name: model
+        description: Vehicle model name
+      - name: year
+        description: Year of manufacture
+      - name: capacity_kg
+        description: Maximum payload in kilograms
+      - name: capacity_m3
+        description: Maximum cargo volume in cubic metres
+      - name: fuel_type
+        description: Fuel type
+      - name: home_base
+        description: Home depot city
+      - name: is_active
+        description: Whether the vehicle is currently in active service
+      - name: last_service_date
+        description: Date of last maintenance service
+      - name: latest_recorded_at
+        description: Timestamp of the most recent GPS reading
+      - name: latest_latitude
+        description: Latitude of the most recent GPS reading
+      - name: latest_longitude
+        description: Longitude of the most recent GPS reading
+      - name: latest_speed_kmh
+        description: Speed at the most recent GPS reading
+      - name: latest_heading_degrees
+        description: Heading at the most recent GPS reading
+      - name: latest_is_moving
+        description: Whether the vehicle was moving at the most recent reading
+      - name: total_positions
+        description: Total number of GPS position records for the vehicle

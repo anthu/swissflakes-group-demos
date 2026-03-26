@@ -1,0 +1,9 @@
+warehouse_id,warehouse_name,street,postal_code,city,canton,latitude,longitude,capacity_pallets,is_active
+W001,Basel Hauptlager,Hafenstrasse 120,4057,Basel,BS,47.5596,7.5886,2500,TRUE
+W002,Zürich Logistikzentrum,Industriestrasse 45,8005,Zürich,ZH,47.3892,8.5180,3000,TRUE
+W003,Bern Verteilzentrum,Bolligenstrasse 88,3006,Bern,BE,46.9580,7.4674,1800,TRUE
+W004,Lausanne Entrepôt,Route de Romanel 30,1018,Lausanne,VD,46.5497,6.6123,1200,TRUE
+W005,Luzern Lager,Bürgenstrasse 22,6005,Luzern,LU,47.0502,8.3093,1000,TRUE
+W006,St. Gallen Hub,Winkelbachstrasse 10,9015,St. Gallen,SG,47.4345,9.3967,800,TRUE
+W007,Genève Dépôt,Chemin des Aulx 14,1228,Genève,GE,46.2144,6.1232,1500,TRUE
+W008,Chiasso Terminal,Via Motta 3,6830,Chiasso,TI,45.8328,9.0296,600,TRUE

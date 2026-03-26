@@ -1,0 +1,27 @@
+name: sfg_logistics_locations
+version: '1.0.0'
+
+profile: sfg_logistics_locations
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+macro-paths: ["macros"]
+
+clean-targets:
+  - target
+  - dbt_packages
+
+seeds:
+  sfg_logistics_locations:
+    +schema: RAW_LOCATIONS
+
+models:
+  sfg_logistics_locations:
+    staging:
+      +schema: STG_LOCATIONS
+      +materialized: view
+    marts:
+      +schema: MART_LOCATIONS
+      +materialized: table

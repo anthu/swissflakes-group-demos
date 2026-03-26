@@ -1,0 +1,31 @@
+manifest_version: 2
+type: DCM_PROJECT
+
+default_target: PROD
+
+templating:
+  defaults:
+    dp_type: "DOMAIN"
+    dp_name: "SFG_PAY"
+    dp_description: "SwissFlakes Pay AG domain - payment and merchant data products"
+
+  configurations:
+    DEV:
+      env_suffix: "_DEV"
+    PROD:
+      env_suffix: ""
+
+targets:
+  DEV:
+    account_identifier: "{{ env_var('SNOWFLAKE_ACCOUNT_DEV') }}"
+    project_name: 'SFG_PAY_DEV.DCM.DP_SFG_PAY'
+    project_owner: DP_SFG_PAY_DEV_OWNER
+    project_comment: "{{dp_type}} Data Product: {{dp_description}}"
+    templating_config: DEV
+
+  PROD:
+    account_identifier: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+    project_name: 'SFG_PAY.DCM.DP_SFG_PAY'
+    project_owner: DP_SFG_PAY_OWNER
+    project_comment: "{{dp_type}} Data Product: {{dp_description}}"
+    templating_config: PROD

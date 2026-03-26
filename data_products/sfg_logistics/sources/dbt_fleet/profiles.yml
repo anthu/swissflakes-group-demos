@@ -1,0 +1,8 @@
+sfg_logistics_fleet:
+  target: prod
+  outputs:
+    prod:
+      type: snowflake
+      database: SFG_LOGISTICS
+      role: DP_SFG_LOGISTICS_OWNER
+      schema: STG_FLEET

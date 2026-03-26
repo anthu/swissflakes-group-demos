@@ -1,0 +1,8 @@
+sfg_pay_transactions:
+  target: prod
+  outputs:
+    prod:
+      type: snowflake
+      database: SFG_PAY
+      role: DP_SFG_PAY_OWNER
+      schema: STG_TRANSACTIONS

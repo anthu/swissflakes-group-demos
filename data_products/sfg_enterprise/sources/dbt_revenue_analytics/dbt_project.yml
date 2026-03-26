@@ -1,0 +1,22 @@
+name: sfg_enterprise_revenue_analytics
+version: '1.0.0'
+
+profile: sfg_enterprise_revenue_analytics
+
+model-paths: ["models"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+macro-paths: ["macros"]
+
+clean-targets:
+  - target
+  - dbt_packages
+
+models:
+  sfg_enterprise_revenue_analytics:
+    marts:
+      +schema: MART_REVENUE_ANALYTICS
+      +materialized: table
+    semantic_views:
+      +schema: MART_REVENUE_ANALYTICS
+      +materialized: semantic_view

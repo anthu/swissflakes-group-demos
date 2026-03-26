@@ -1,0 +1,31 @@
+manifest_version: 2
+type: DCM_PROJECT
+
+default_target: PROD
+
+templating:
+  defaults:
+    dp_type: "DOMAIN"
+    dp_name: "SFG_ENTERPRISE"
+    dp_description: "SwissFlakes Group enterprise analytics - fulfillment, customer 360, revenue, and compliance"
+
+  configurations:
+    DEV:
+      env_suffix: "_DEV"
+    PROD:
+      env_suffix: ""
+
+targets:
+  DEV:
+    account_identifier: "{{ env_var('SNOWFLAKE_ACCOUNT_DEV') }}"
+    project_name: 'SFG_ENTERPRISE_DEV.DCM.DP_SFG_ENTERPRISE'
+    project_owner: DP_SFG_ENTERPRISE_DEV_OWNER
+    project_comment: "{{dp_type}} Data Product: {{dp_description}}"
+    templating_config: DEV
+
+  PROD:
+    account_identifier: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+    project_name: 'SFG_ENTERPRISE.DCM.DP_SFG_ENTERPRISE'
+    project_owner: DP_SFG_ENTERPRISE_OWNER
+    project_comment: "{{dp_type}} Data Product: {{dp_description}}"
+    templating_config: PROD

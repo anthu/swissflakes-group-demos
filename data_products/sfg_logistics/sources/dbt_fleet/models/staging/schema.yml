@@ -1,0 +1,67 @@
+version: 2
+
+models:
+  - name: stg_vehicle
+    description: Staged vehicle data with type casts
+    columns:
+      - name: vehicle_id
+        description: Unique vehicle identifier (V001..V020)
+        tests:
+          - unique
+          - not_null
+      - name: plate_number
+        description: Swiss licence plate number
+      - name: vehicle_type
+        description: Type of vehicle
+        tests:
+          - accepted_values:
+              values: ['TRUCK', 'VAN', 'TRAILER', 'ELECTRIC_VAN', 'HYBRID']
+      - name: make
+        description: Vehicle manufacturer
+      - name: model
+        description: Vehicle model name
+      - name: year
+        description: Year of manufacture
+      - name: capacity_kg
+        description: Maximum payload in kilograms
+      - name: capacity_m3
+        description: Maximum cargo volume in cubic metres
+      - name: fuel_type
+        description: Fuel type
+        tests:
+          - accepted_values:
+              values: ['DIESEL', 'ELECTRIC', 'HYBRID']
+      - name: home_base
+        description: Home depot city (Basel, Zürich, Bern)
+      - name: is_active
+        description: Whether the vehicle is currently in active service
+      - name: last_service_date
+        description: Date of last maintenance service
+
+  - name: stg_gps_position
+    description: Staged GPS position data with type casts
+    columns:
+      - name: position_id
+        description: Unique position record identifier (GP001..GP100)
+        tests:
+          - unique
+          - not_null
+      - name: vehicle_id
+        description: Foreign key to vehicle
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_vehicle')
+              field: vehicle_id
+      - name: recorded_at
+        description: Timestamp of the GPS reading
+      - name: latitude
+        description: GPS latitude (Swiss range ~46-48)
+      - name: longitude
+        description: GPS longitude (Swiss range ~6-10)
+      - name: speed_kmh
+        description: Speed in km/h at time of reading
+      - name: heading_degrees
+        description: Compass heading in degrees (0-360)
+      - name: is_moving
+        description: Whether the vehicle was in motion

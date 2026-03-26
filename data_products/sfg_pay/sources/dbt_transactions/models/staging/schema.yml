@@ -1,0 +1,75 @@
+version: 2
+
+models:
+  - name: stg_payment
+    description: Staged payment data with type casts
+    columns:
+      - name: payment_id
+        description: Unique payment identifier (PAY001..PAY150)
+        tests:
+          - unique
+          - not_null
+      - name: order_id
+        description: Foreign key to order (O001..O100)
+        tests:
+          - not_null
+      - name: merchant_id
+        description: Foreign key to merchant (M001..M030)
+        tests:
+          - not_null
+      - name: amount_chf
+        description: Payment amount in CHF
+      - name: currency
+        description: Currency code (CHF)
+      - name: payment_method
+        description: Payment method (CREDIT_CARD, DEBIT_CARD, TWINT, BANK_TRANSFER, CRYPTO)
+        tests:
+          - accepted_values:
+              values: ['CREDIT_CARD', 'DEBIT_CARD', 'TWINT', 'BANK_TRANSFER', 'CRYPTO']
+      - name: card_brand
+        description: Card brand (VISA, MASTERCARD, AMEX) or null for non-card methods
+      - name: status
+        description: Payment status
+        tests:
+          - accepted_values:
+              values: ['PENDING', 'AUTHORIZED', 'CAPTURED', 'REFUNDED', 'CHARGEBACK', 'FAILED']
+      - name: created_at
+        description: Date the payment was created
+      - name: processed_at
+        description: Date the payment was processed
+      - name: is_international
+        description: Whether the payment is international
+      - name: requires_aml_check
+        description: Whether AML check is required (amount > 10000 or CRYPTO)
+
+  - name: stg_refund
+    description: Staged refund data with type casts
+    columns:
+      - name: refund_id
+        description: Unique refund identifier (R001..R020)
+        tests:
+          - unique
+          - not_null
+      - name: payment_id
+        description: Foreign key to payment
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_payment')
+              field: payment_id
+      - name: reason
+        description: Refund reason
+        tests:
+          - accepted_values:
+              values: ['CUSTOMER_REQUEST', 'DEFECTIVE_PRODUCT', 'WRONG_ITEM', 'DUPLICATE_CHARGE', 'FRAUD']
+      - name: amount_chf
+        description: Refund amount in CHF
+      - name: status
+        description: Refund status
+        tests:
+          - accepted_values:
+              values: ['PENDING', 'APPROVED', 'PROCESSED', 'REJECTED']
+      - name: created_at
+        description: Date the refund was created
+      - name: processed_at
+        description: Date the refund was processed

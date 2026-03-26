@@ -1,0 +1,47 @@
+version: 2
+
+models:
+  - name: mart_warehouse_capacity
+    description: Warehouse overview with aggregated zone capacity breakdowns
+    columns:
+      - name: warehouse_id
+        description: Unique warehouse identifier
+        tests:
+          - unique
+          - not_null
+      - name: warehouse_name
+        description: Warehouse display name
+      - name: street
+        description: Street address
+      - name: postal_code
+        description: Swiss postal code
+      - name: city
+        description: City name
+      - name: canton
+        description: Swiss canton abbreviation
+      - name: latitude
+        description: GPS latitude
+      - name: longitude
+        description: GPS longitude
+      - name: warehouse_capacity_pallets
+        description: Declared total pallet capacity of the warehouse
+      - name: is_active
+        description: Whether the warehouse is currently active
+      - name: total_zones
+        description: Number of zones in the warehouse
+      - name: total_zone_capacity_pallets
+        description: Sum of all zone pallet capacities
+      - name: temp_controlled_zones
+        description: Number of temperature-controlled zones
+      - name: storage_capacity_pallets
+        description: Pallet capacity in STORAGE zones
+      - name: cold_capacity_pallets
+        description: Pallet capacity in COLD zones
+      - name: hazmat_capacity_pallets
+        description: Pallet capacity in HAZMAT zones
+      - name: receiving_capacity_pallets
+        description: Pallet capacity in RECEIVING zones
+      - name: loading_capacity_pallets
+        description: Pallet capacity in LOADING zones
+      - name: returns_capacity_pallets
+        description: Pallet capacity in RETURNS zones

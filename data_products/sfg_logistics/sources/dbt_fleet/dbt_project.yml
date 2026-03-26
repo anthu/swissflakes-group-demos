@@ -1,0 +1,27 @@
+name: sfg_logistics_fleet
+version: '1.0.0'
+
+profile: sfg_logistics_fleet
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+macro-paths: ["macros"]
+
+clean-targets:
+  - target
+  - dbt_packages
+
+seeds:
+  sfg_logistics_fleet:
+    +schema: RAW_FLEET
+
+models:
+  sfg_logistics_fleet:
+    staging:
+      +schema: STG_FLEET
+      +materialized: view
+    marts:
+      +schema: MART_FLEET
+      +materialized: table

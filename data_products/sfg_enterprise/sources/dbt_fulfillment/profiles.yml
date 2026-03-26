@@ -1,0 +1,8 @@
+sfg_enterprise_fulfillment:
+  target: prod
+  outputs:
+    prod:
+      type: snowflake
+      database: SFG_ENTERPRISE
+      role: DP_SFG_ENTERPRISE_OWNER
+      schema: MART_FULFILLMENT

@@ -1,0 +1,19 @@
+definition_version: 2
+entities:
+  sfg_admin_dashboard:
+    type: streamlit
+    identifier:
+      name: SFG_ADMIN_DASHBOARD
+      schema: GOVERNANCE
+      database: SFG_ADMIN
+    query_warehouse: SWISSFLAKES_WH_ADMIN
+    main_file: streamlit_app.py
+    title: "SwissFlakes Platform Admin"
+    comment: "Platform monitoring: warehouses, roles, tags, and DCM projects"
+    artifacts:
+      - streamlit_app.py
+      - environment.yml
+      - views/home.py
+      - views/warehouses.py
+      - views/roles.py
+      - shared/data.py

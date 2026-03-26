@@ -1,0 +1,4 @@
+company_prefix: SWISSFLAKES
+prod_connection: ""        # Snow CLI connection name for PROD account
+dev_connection: ""         # Snow CLI connection name for DEV account
+admin_db: SWISSFLAKES_ADMIN

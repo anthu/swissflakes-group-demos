@@ -1,0 +1,3 @@
+DEFINE DBT PROJECT SFG_ENTERPRISE{{env_suffix}}.DCM.DBT_CUSTOMER_360
+  FROM 'sources/dbt_customer_360'
+  DEFAULT_TARGET = 'prod';

@@ -1,0 +1,33 @@
+version: 2
+
+sources:
+  - name: RAW_WEATHER
+    database: SFG_ENTERPRISE
+    schema: RAW_WEATHER
+    tables:
+      - name: METEOSWISS_MEASUREMENTS
+
+models:
+  - name: stg_meteoswiss_stations
+    description: Flattened MeteoSwiss weather station catalog from STAC FeatureCollection
+    columns:
+      - name: station_id
+        description: MeteoSwiss station code (e.g. abo, aeg, aig)
+        tests:
+          - not_null
+      - name: station_name
+        description: Station name with code (e.g. Adelboden (ABO))
+        tests:
+          - not_null
+      - name: last_update
+        description: Timestamp of last data update
+      - name: longitude
+        description: Station longitude (WGS84)
+        tests:
+          - not_null
+      - name: latitude
+        description: Station latitude (WGS84)
+        tests:
+          - not_null
+      - name: num_assets
+        description: Number of available CSV data assets for this station

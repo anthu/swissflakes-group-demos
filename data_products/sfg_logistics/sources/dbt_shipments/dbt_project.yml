@@ -1,0 +1,27 @@
+name: sfg_logistics_shipments
+version: '1.0.0'
+
+profile: sfg_logistics_shipments
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+macro-paths: ["macros"]
+
+clean-targets:
+  - target
+  - dbt_packages
+
+seeds:
+  sfg_logistics_shipments:
+    +schema: RAW_SHIPMENTS
+
+models:
+  sfg_logistics_shipments:
+    staging:
+      +schema: STG_SHIPMENTS
+      +materialized: view
+    marts:
+      +schema: MART_SHIPMENTS
+      +materialized: table

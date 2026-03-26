@@ -1,0 +1,51 @@
+version: 2
+
+models:
+  - name: mart_shipment_tracking
+    description: Shipment overview joining each shipment with its latest tracking event and total event count
+    columns:
+      - name: shipment_id
+        description: Unique shipment identifier
+        tests:
+          - unique
+          - not_null
+      - name: order_id
+        description: Foreign key to order
+      - name: vehicle_id
+        description: Foreign key to vehicle
+      - name: origin_warehouse
+        description: Origin warehouse city
+      - name: destination_city
+        description: Destination city name
+      - name: destination_postal_code
+        description: Destination postal code
+      - name: status
+        description: Current shipment status
+      - name: created_at
+        description: Timestamp when shipment was created
+      - name: shipped_at
+        description: Timestamp when shipment was picked up
+      - name: delivered_at
+        description: Timestamp when shipment was delivered
+      - name: weight_kg
+        description: Shipment weight in kilograms
+      - name: volume_m3
+        description: Shipment volume in cubic metres
+      - name: requires_customs
+        description: Whether customs clearance is required
+      - name: customs_declaration_id
+        description: Customs declaration reference
+      - name: latest_event_type
+        description: Most recent tracking event type
+      - name: latest_event_timestamp
+        description: Timestamp of the most recent tracking event
+      - name: latest_location
+        description: Location of the most recent tracking event
+      - name: latest_latitude
+        description: Latitude of the most recent tracking event
+      - name: latest_longitude
+        description: Longitude of the most recent tracking event
+      - name: latest_notes
+        description: Notes from the most recent tracking event
+      - name: total_events
+        description: Total number of tracking events for the shipment

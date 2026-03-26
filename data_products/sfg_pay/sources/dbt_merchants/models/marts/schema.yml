@@ -1,0 +1,43 @@
+version: 2
+
+models:
+  - name: mart_merchant_overview
+    description: Merchant overview with aggregated payout data and total fees
+    columns:
+      - name: merchant_id
+        description: Unique merchant identifier
+        tests:
+          - unique
+          - not_null
+      - name: merchant_name
+        description: Merchant business name
+      - name: business_type
+        description: Type of business (RETAIL, ECOMMERCE, B2B, MARKETPLACE)
+      - name: registration_number
+        description: Swiss commercial register number
+      - name: bank_account_iban
+        description: Swiss IBAN for settlements
+      - name: settlement_currency
+        description: Settlement currency
+      - name: fee_rate_pct
+        description: Transaction fee rate percentage
+      - name: customer_id
+        description: Foreign key to customer
+      - name: is_active
+        description: Whether the merchant is currently active
+      - name: onboarded_at
+        description: Date the merchant was onboarded
+      - name: payout_count
+        description: Total number of payouts
+      - name: total_gross_amount_chf
+        description: Total gross transaction volume in CHF
+      - name: total_fee_amount_chf
+        description: Total fees collected in CHF
+      - name: total_net_amount_chf
+        description: Total net payout amount in CHF
+      - name: total_paid_amount_chf
+        description: Total amount actually paid out in CHF
+      - name: first_payout_period
+        description: Start of first payout period
+      - name: last_payout_period
+        description: End of last payout period

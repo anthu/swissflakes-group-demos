@@ -1,0 +1,41 @@
+version: 2
+
+models:
+  - name: mart_transaction_summary
+    description: Transaction summary joining payments with refund aggregates
+    columns:
+      - name: payment_id
+        description: Unique payment identifier
+        tests:
+          - unique
+          - not_null
+      - name: order_id
+        description: Foreign key to order
+      - name: merchant_id
+        description: Foreign key to merchant
+      - name: amount_chf
+        description: Original payment amount in CHF
+      - name: currency
+        description: Currency code (CHF)
+      - name: payment_method
+        description: Payment method used
+      - name: card_brand
+        description: Card brand if applicable
+      - name: status
+        description: Payment status
+      - name: created_at
+        description: Date the payment was created
+      - name: processed_at
+        description: Date the payment was processed
+      - name: is_international
+        description: Whether the payment is international
+      - name: requires_aml_check
+        description: Whether AML check is required
+      - name: refund_count
+        description: Number of refunds associated with this payment
+      - name: total_refund_amount_chf
+        description: Total refund amount in CHF
+      - name: has_processed_refund
+        description: Whether at least one refund has been processed
+      - name: net_amount_chf
+        description: Net amount after refunds (amount - total refunds)

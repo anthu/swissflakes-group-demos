@@ -1,0 +1,8 @@
+sfg_enterprise_customer_360:
+  target: prod
+  outputs:
+    prod:
+      type: snowflake
+      database: SFG_ENTERPRISE
+      role: DP_SFG_ENTERPRISE_OWNER
+      schema: MART_CUSTOMER_360

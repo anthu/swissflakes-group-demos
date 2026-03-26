@@ -1,0 +1,55 @@
+version: 2
+
+sources:
+  - name: ORDERS
+    database: SFG_LOGISTICS
+    schema: MART_ORDERS
+    tables:
+      - name: MART_ORDER_SUMMARY
+  - name: SHIPMENTS
+    database: SFG_LOGISTICS
+    schema: MART_SHIPMENTS
+    tables:
+      - name: MART_SHIPMENT_TRACKING
+  - name: TRANSACTIONS
+    database: SFG_PAY
+    schema: MART_TRANSACTIONS
+    tables:
+      - name: MART_TRANSACTION_SUMMARY
+  - name: PRODUCTS
+    database: SFG_LOGISTICS
+    schema: MART_PRODUCTS
+    tables:
+      - name: MART_PRODUCT_CATALOG
+  - name: FLEET
+    database: SFG_LOGISTICS
+    schema: MART_FLEET
+    tables:
+      - name: MART_FLEET_STATUS
+
+models:
+  - name: fulfillment_lifecycle
+    description: Full order-to-delivery lifecycle joining orders, shipments, and payments
+    columns:
+      - name: order_id
+        tests:
+          - not_null
+      - name: customer_id
+        tests:
+          - not_null
+      - name: order_date
+      - name: order_status
+      - name: order_total_chf
+      - name: shipment_id
+      - name: shipment_status
+      - name: vehicle_id
+      - name: origin_warehouse
+      - name: destination_city
+      - name: shipped_at
+      - name: delivered_at
+      - name: delivery_days
+      - name: payment_id
+      - name: payment_method
+      - name: payment_status
+      - name: payment_amount_chf
+      - name: net_payment_chf

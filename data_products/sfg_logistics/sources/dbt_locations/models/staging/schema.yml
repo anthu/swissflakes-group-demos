@@ -1,0 +1,56 @@
+version: 2
+
+models:
+  - name: stg_warehouse
+    description: Staged warehouse data with type casts
+    columns:
+      - name: warehouse_id
+        description: Unique warehouse identifier (W001..W008)
+        tests:
+          - unique
+          - not_null
+      - name: warehouse_name
+        description: Warehouse display name
+      - name: street
+        description: Street address
+      - name: postal_code
+        description: Swiss postal code (PLZ)
+      - name: city
+        description: City name
+      - name: canton
+        description: Swiss canton abbreviation
+      - name: latitude
+        description: GPS latitude
+      - name: longitude
+        description: GPS longitude
+      - name: capacity_pallets
+        description: Total pallet capacity
+      - name: is_active
+        description: Whether the warehouse is currently active
+
+  - name: stg_warehouse_zone
+    description: Staged warehouse zone data with type casts
+    columns:
+      - name: zone_id
+        description: Unique zone identifier (Z001..Z025)
+        tests:
+          - unique
+          - not_null
+      - name: warehouse_id
+        description: Foreign key to warehouse
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_warehouse')
+              field: warehouse_id
+      - name: zone_name
+        description: Human-readable zone name
+      - name: zone_type
+        description: Zone type classification
+        tests:
+          - accepted_values:
+              values: ['RECEIVING', 'STORAGE', 'COLD', 'HAZMAT', 'LOADING', 'RETURNS']
+      - name: capacity_pallets
+        description: Pallet capacity for this zone
+      - name: temperature_controlled
+        description: Whether the zone has temperature control

@@ -1,0 +1,27 @@
+name: sfg_pay_transactions
+version: '1.0.0'
+
+profile: sfg_pay_transactions
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+macro-paths: ["macros"]
+
+clean-targets:
+  - target
+  - dbt_packages
+
+seeds:
+  sfg_pay_transactions:
+    +schema: RAW_TRANSACTIONS
+
+models:
+  sfg_pay_transactions:
+    staging:
+      +schema: STG_TRANSACTIONS
+      +materialized: view
+    marts:
+      +schema: MART_TRANSACTIONS
+      +materialized: table
