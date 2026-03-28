@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  - name: sfg_pay_merchants
+    description: >
+      Organization listing that shares merchant data with all accounts in the
+      organization.
+    config:
+      materialized: organization_listing
+      meta:
+        share_name: SFG_PAY_MERCHANTS
+        listing_name: SFG_PAY_MERCHANTS
+        publish: false
+        listing_manifest:
+          title: "SwissFlakes Pay -- Merchants"
+          description: |
+            Merchant data product from SwissFlakes Pay AG.
+
+            **Data Tables:**
+            - **MART_MERCHANT_OVERVIEW** -- merchant profiles with onboarding and compliance status
+          organization_profile: "INTERNAL"
+          organization_targets:
+            access:
+              - all_internal_accounts: true
+          locations:
+            access_regions:
+              - name: "ALL"
+          auto_fulfillment:
+            refresh_type: "SUB_DATABASE"
+            refresh_schedule: "10 MINUTE"

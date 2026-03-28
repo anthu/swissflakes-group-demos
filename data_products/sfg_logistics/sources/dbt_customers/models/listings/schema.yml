@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  - name: sfg_logistics_customers
+    description: >
+      Organization listing that shares customer data (business customers and
+      contact information) with all accounts in the organization.
+    config:
+      materialized: organization_listing
+      meta:
+        share_name: SFG_LOGISTICS_CUSTOMERS
+        listing_name: SFG_LOGISTICS_CUSTOMERS
+        publish: false
+        listing_manifest:
+          title: "SwissFlakes Logistics -- Customers"
+          description: |
+            Customer data product from SwissFlakes Logistics AG.
+
+            **Data Tables:**
+            - **MART_CUSTOMER_OVERVIEW** -- business customers with contact details
+          organization_profile: "INTERNAL"
+          organization_targets:
+            access:
+              - all_internal_accounts: true
+          locations:
+            access_regions:
+              - name: "ALL"
+          auto_fulfillment:
+            refresh_type: "SUB_DATABASE"
+            refresh_schedule: "10 MINUTE"

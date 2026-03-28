@@ -40,6 +40,7 @@ GRANT CREATE TABLE, CREATE VIEW ON SCHEMA SFG_PAY{{env_suffix}}.MART_{{dp}} TO R
 {% endfor %}
 
 GRANT ROLE DP_SFG_PAY{{env_suffix}}_OWNER TO ROLE SWISSFLAKES_PLATFORM_ADMIN;
+GRANT ROLE SFG_PAY_DATA_PUBLISHER TO ROLE DP_SFG_PAY{{env_suffix}}_OWNER;
 
 -- Openflow SPCS streaming: SNOWFLAKE_MANAGED auth runs as PUBLIC primary role.
 -- Narrow grants so PutSnowpipeStreaming2 can write to pre-created target tables.
