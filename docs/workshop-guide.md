@@ -48,53 +48,43 @@ SHOW TAGS IN SCHEMA SWISSFLAKES_ADMIN.GOVERNANCE;  -- 9 tags
 
 ## Step 2: Source Data Products (T3 + T4)
 
-For each source DP (SHIPMENTS, FLEET, LOCATIONS, ORDERS, CUSTOMERS, PRODUCTS, TRANSACTIONS, MERCHANTS):
+Deploy each source domain's DCM project:
 
 ```bash
-snow dcm create {DB}.DCM.DATA_PRODUCT --if-not-exists -c <connection>
-snow dcm deploy {DB}.DCM.DATA_PRODUCT -c <connection> --alias "initial"
+# SFG_LOGISTICS (7 sub-DPs: customers, shipments, fleet, locations, orders, products, open_transport)
+snow dcm deploy --from data_products/sfg_logistics --target PROD -c <connection>
+
+# SFG_PAY (2 sub-DPs: transactions, merchants)
+snow dcm deploy --from data_products/sfg_pay --target PROD -c <connection>
 ```
 
-Load seed data and build models via Snowflake-native dbt:
+Load seed data and build models (including listings) via Snowflake-native dbt:
 ```sql
-EXECUTE DBT PROJECT {DB}.DCM.DBT_{DB} ARGS = 'seed';
-EXECUTE DBT PROJECT {DB}.DCM.DBT_{DB} ARGS = 'run';
+-- Seed each project, then run (listings are created automatically during 'run')
+EXECUTE DBT PROJECT SFG_LOGISTICS.DCM.DBT_CUSTOMERS ARGS = 'seed';
+EXECUTE DBT PROJECT SFG_LOGISTICS.DCM.DBT_CUSTOMERS ARGS = 'run';
+-- Repeat for: DBT_SHIPMENTS, DBT_FLEET, DBT_LOCATIONS, DBT_ORDERS, DBT_PRODUCTS
+-- DBT_OPEN_TRANSPORT has no seeds (Openflow data), but still needs 'run'
+
+EXECUTE DBT PROJECT SFG_PAY.DCM.DBT_TRANSACTIONS ARGS = 'seed';
+EXECUTE DBT PROJECT SFG_PAY.DCM.DBT_TRANSACTIONS ARGS = 'run';
+EXECUTE DBT PROJECT SFG_PAY.DCM.DBT_MERCHANTS ARGS = 'seed';
+EXECUTE DBT PROJECT SFG_PAY.DCM.DBT_MERCHANTS ARGS = 'run';
 ```
 
-Verify:
+## Step 3: Verify Internal Marketplace Listings
+
+Each `dbt run` automatically creates an organization listing (DRAFT) via the `dbt-snowflake-listings` package.
+9 listings total: 7 from SFG_LOGISTICS, 2 from SFG_PAY.
+
 ```sql
-SELECT COUNT(*) FROM ORDERS.RAW.ORDER_HEADER;           -- ~100
-SELECT COUNT(*) FROM TRANSACTIONS.RAW.PAYMENT;          -- ~150
-SELECT COUNT(*) FROM CUSTOMERS.RAW.BUSINESS_CUSTOMER;   -- ~30
+SHOW SHARES LIKE 'SFG_LOGISTICS_%';  -- 7 shares
+SHOW SHARES LIKE 'SFG_PAY_%';       -- 2 shares
 ```
 
-## Step 3: Internal Marketplace Listings (T6)
-
-Publish each source DP's MARTS tables via organization listings:
-
-```sql
-CREATE SHARE IF NOT EXISTS SWISSFLAKES_{DP}_SHARE;
-GRANT USAGE ON DATABASE {DB} TO SHARE SWISSFLAKES_{DP}_SHARE;
-GRANT USAGE ON SCHEMA {DB}.MARTS TO SHARE SWISSFLAKES_{DP}_SHARE;
-GRANT SELECT ON ALL TABLES IN SCHEMA {DB}.MARTS TO SHARE SWISSFLAKES_{DP}_SHARE;
-
-CREATE ORGANIZATION LISTING SWISSFLAKES_{DP}_LISTING
-  SHARE SWISSFLAKES_{DP}_SHARE AS
-$$
-title: "SwissFlakes {DP} Data Product"
-description: "MARTS tables from the {DP} source data product"
-terms_of_service:
-  type: OFFLINE
-targets:
-  accounts: ["IN ORGANIZATION"]
-$$;
-```
-
-Verify:
-```sql
-SHOW SHARES LIKE 'SWISSFLAKES_%';
-SHOW ORGANIZATION LISTINGS LIKE 'SWISSFLAKES_%';
-```
+To publish listings (requires organization profile configured on the account):
+- Set `publish: true` in each `models/listings/schema.yml`
+- Re-run `EXECUTE DBT PROJECT ... ARGS = 'run'`
 
 ## Step 4: Enterprise + Consumer Data Products (T7)
 
@@ -247,7 +237,7 @@ LIMIT 10;
 | DCM for infrastructure | Declarative, idempotent, version-controlled |
 | DEFINE DBT PROJECT | Snowflake-native dbt execution, no local install needed |
 | Semantic Views (SQL DDL) | First-class Snowflake objects, SQL-based, no YAML stage files |
-| Organization listings (SHARE) | Internal Marketplace discoverability without app packages |
+| Per-sub-DP listings (dbt-snowflake-listings) | True data mesh: each sub-DP owns its listing via `ref()`, declarative in dbt DAG |
 | Cross-DB source() in dbt | Enterprise/consumer DPs reference source DP MARTS via database override |
 | LATERAL FLATTEN for Openflow | Extract typed columns from single VARIANT column streamed by SSV2 |
 | DATA_QUALITY tags | Quality encoding decoupled from schema names |

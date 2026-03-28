@@ -36,6 +36,38 @@ Per data product:
 
 Platform roles: `SWISSFLAKES_PLATFORM_ADMIN`, `SWISSFLAKES_DATA_ENGINEER`, `SWISSFLAKES_DATA_ANALYST`, `SWISSFLAKES_COMPLIANCE_OFFICER`, `SWISSFLAKES_CORTEX_ANALYST`, `SWISSFLAKES_BI_CONSUMER`
 
+Publisher roles (per subsidiary, defined in `data_products/sfg_admin/sources/definitions/02_access.sql`):
+- `SFG_LOGISTICS_DATA_PUBLISHER` -- `CREATE SHARE`, `CREATE ORGANIZATION LISTING`, `IMPORT SHARE` on account
+- `SFG_PAY_DATA_PUBLISHER` -- same privileges
+
+Each publisher role is granted to the respective domain owner (`DP_SFG_LOGISTICS_OWNER`, `DP_SFG_PAY_OWNER`) in their `01_infrastructure.sql`.
+
+## Internal Marketplace (Per-Sub-DP Listings)
+
+Each sub-DP publishes its own organization listing using the [`dbt-snowflake-listings`](https://github.com/anthu/dbt-snowflake-listings) package (v0.2.3).
+Listings are embedded directly in each dbt project -- no separate listing project needed.
+
+| Listing | Share | Producer | MART Table |
+|---------|-------|----------|------------|
+| SFG_LOGISTICS_CUSTOMERS | SFG_LOGISTICS_CUSTOMERS | SFG_LOGISTICS | MART_CUSTOMERS.MART_CUSTOMER_OVERVIEW |
+| SFG_LOGISTICS_SHIPMENTS | SFG_LOGISTICS_SHIPMENTS | SFG_LOGISTICS | MART_SHIPMENTS.MART_SHIPMENT_TRACKING |
+| SFG_LOGISTICS_FLEET | SFG_LOGISTICS_FLEET | SFG_LOGISTICS | MART_FLEET.MART_FLEET_STATUS |
+| SFG_LOGISTICS_LOCATIONS | SFG_LOGISTICS_LOCATIONS | SFG_LOGISTICS | MART_LOCATIONS.MART_WAREHOUSE_CAPACITY |
+| SFG_LOGISTICS_ORDERS | SFG_LOGISTICS_ORDERS | SFG_LOGISTICS | MART_ORDERS.MART_ORDER_SUMMARY |
+| SFG_LOGISTICS_PRODUCTS | SFG_LOGISTICS_PRODUCTS | SFG_LOGISTICS | MART_PRODUCTS.MART_PRODUCT_CATALOG |
+| SFG_LOGISTICS_OPEN_TRANSPORT | SFG_LOGISTICS_OPEN_TRANSPORT | SFG_LOGISTICS | MART_OPEN_TRANSPORT.MART_SWISS_RAIL_OVERVIEW |
+| SFG_PAY_TRANSACTIONS | SFG_PAY_TRANSACTIONS | SFG_PAY | MART_TRANSACTIONS.MART_TRANSACTION_SUMMARY |
+| SFG_PAY_MERCHANTS | SFG_PAY_MERCHANTS | SFG_PAY | MART_MERCHANTS.MART_MERCHANT_OVERVIEW |
+
+**Pattern (per dbt project):**
+- `packages.yml` -- references `dbt-snowflake-listings` v0.2.3 via git
+- `models/listings/{listing_name}.sql` -- `{{ dbt_snowflake_listings.share_model(ref('mart_...')) }}`
+- `models/listings/schema.yml` -- `organization_listing` materialization config + manifest YAML
+- DCM definition (`02_dbt_*.sql`) includes `EXTERNAL_ACCESS_INTEGRATIONS = (SWISSFLAKES_GITHUB_EAI)` for `dbt deps`
+- All listings use `publish: false` (DRAFT) until organization profile is configured; set `publish: true` to publish
+
+**EAI:** `SWISSFLAKES_GITHUB_EAI` allows egress to `github.com` + `codeload.github.com` for dbt package downloads.
+
 ## DCM Convention
 
 - DCM projects live in `data_products/{name}/` (flat, no dcm/ subfolder)
@@ -53,6 +85,7 @@ Platform roles: `SWISSFLAKES_PLATFORM_ADMIN`, `SWISSFLAKES_DATA_ENGINEER`, `SWIS
 - Source DPs: seeds in `seeds/`, staging in `models/staging/`, marts in `models/marts/`
 - Enterprise/Consumer DPs: no seeds, cross-DB `source()` references in `models/marts/schema.yml`
 - Custom `generate_schema_name` macro required so dbt uses exact schema names
+- **Important:** `generate_schema_name` must use `{%- set default_schema = target.schema -%}`, NOT bare `{{ default_schema }}` (empty during Snowflake `deps_compile`)
 - Execute via: `EXECUTE DBT PROJECT {DB}.DCM.DBT_{DB} ARGS = 'run'`
 - Profile name = lowercase DB name, no `env_var()` or `password` (Snowflake session handles auth)
 
@@ -138,8 +171,10 @@ All sources are credential-free and Marketplace-eligible.
 
 ```
 data_products/{name}/                    -- DCM project (manifest.yml + sources/)
-data_products/{name}/sources/definitions/ -- DCM SQL definitions
-data_products/{name}/sources/dbt_{dp}/   -- Embedded dbt projects
+data_products/{name}/sources/definitions/ -- DCM SQL definitions (01_infra, 02_dbt_*)
+data_products/{name}/sources/dbt_{dp}/   -- Embedded dbt projects (one per sub-DP)
+data_products/{name}/sources/dbt_{dp}/models/listings/ -- Listing model + schema.yml per sub-DP
+data_products/{name}/sources/dbt_{dp}/packages.yml     -- dbt-snowflake-listings dependency
 streamlit-apps/{app}/                    -- Streamlit in Snowflake apps (snowflake.yml + views/)
 notebooks/{name}/                        -- Snowflake Notebooks (snowflake.yml + .ipynb)
 cortex-agent/                            -- Cortex Agent spec + creation SQL
@@ -148,7 +183,6 @@ openflow/shared/flow_builder.py          -- Base class for KuCoin v2 pattern
 openflow/flows/                          -- Individual flow scripts (one per source)
 openflow/deploy.sh                       -- Orchestrator: deploy all flows sequentially
 infrastructure/terraform/                -- Security policies, monitors, EAI, grants
-.cortex/skills/deploy-snowflake-apps/    -- Deployment skill for SiS + Notebooks
 tests/                                   -- DCM validation tests
 docs/                                    -- Workshop guide
 ```

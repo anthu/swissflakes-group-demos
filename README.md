@@ -17,7 +17,7 @@ End-to-end Snowflake demo for **SwissFlakes Group**, a fictional Swiss holding c
 
 ### Features Demonstrated
 
-- **Data Mesh** -- 1 DB per data product, Internal Marketplace listings (declarative sharing)
+- **Data Mesh** -- 1 DB per domain, per-sub-DP Internal Marketplace listings via `dbt-snowflake-listings`
 - **DCM** -- Database Change Management for all infrastructure
 - **dbt** -- Seed data, staging, and marts models
 - **Governance** -- Masking policies, RLS, DATA_QUALITY tags (BRONZE/SILVER/GOLD)
@@ -43,41 +43,32 @@ End-to-end Snowflake demo for **SwissFlakes Group**, a fictional Swiss holding c
 2. Deploy in order:
    ```
    T1  Scaffold            (this repo)
-   T2  Platform DCM        data_products/platform/
-   T3  Source DP DCM (x8)  data_products/{name}/dcm/
-   T4  dbt seeds           EXECUTE DBT PROJECT ... ARGS = 'seed'
+   T2  Platform DCM        data_products/sfg_admin/
+   T3  Source Domain DCM   data_products/sfg_logistics/ + data_products/sfg_pay/
+   T4  dbt seed + run      EXECUTE DBT PROJECT ... ARGS = 'seed' then 'run'
    T5  Terraform           infrastructure/terraform/
-   T6  Listings            listings/
-   T7  Enterprise DPs      data_products/{fulfillment,customer_360,revenue_analytics,compliance}/
-   T8  Cortex Agent        cortex-agent/ + semantic-views/
-   T9  Openflow            openflow/
-   T10 Docs                docs/
+   T6  Enterprise DPs      data_products/sfg_enterprise/
+   T7  Cortex Agent        cortex-agent/
+   T8  Openflow            openflow/
+   T9  Docs                docs/
    ```
+   Listings are created automatically during `dbt run` (step T4) via the `organization_listing` materialization.
 
 ## Repo Structure
 
 ```
 swissflakes-group-demos/
 ├── config.example.yml          # Connection config template
-├── data_products/              # One folder per data product
-│   ├── platform/               # SWISSFLAKES_ADMIN (DCM)
-│   ├── shipments/              # dcm/ (includes embedded dbt)
-│   ├── fleet/
-│   ├── locations/
-│   ├── orders/
-│   ├── customers/
-│   ├── products/
-│   ├── transactions/
-│   ├── merchants/
-│   ├── fulfillment/
-│   ├── customer_360/
-│   ├── revenue_analytics/
-│   └── compliance/
-├── listings/                   # Internal Marketplace configs
-├── infrastructure/terraform/   # Security policies, monitors
-├── openflow/                   # Live feed connector configs
-├── cortex-agent/               # Cortex Agent definition
-├── semantic-views/             # Semantic view SQL DDL files
+├── data_products/              # DCM projects (one per domain)
+│   ├── sfg_admin/              # Platform: roles, tags, governance
+│   ├── sfg_logistics/          # 7 sub-DPs with embedded dbt + listings
+│   ├── sfg_pay/                # 2 sub-DPs with embedded dbt + listings
+│   └── sfg_enterprise/         # Consumer DPs (fulfillment, customer_360, etc.)
+├── infrastructure/terraform/   # Security policies, EAI, monitors
+├── openflow/                   # Live feed connector scripts
+├── cortex-agent/               # Cortex Agent spec + creation SQL
+├── streamlit-apps/             # Streamlit in Snowflake apps
+├── notebooks/                  # Snowflake Notebooks
 └── docs/                       # Workshop guides
 ```
 

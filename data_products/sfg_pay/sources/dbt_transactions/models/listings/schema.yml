@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  - name: sfg_pay_transactions
+    description: >
+      Organization listing that shares payment transaction data with all
+      accounts in the organization.
+    config:
+      materialized: organization_listing
+      meta:
+        share_name: SFG_PAY_TRANSACTIONS
+        listing_name: SFG_PAY_TRANSACTIONS
+        publish: false
+        listing_manifest:
+          title: "SwissFlakes Pay -- Transactions"
+          description: |
+            Transaction data product from SwissFlakes Pay AG.
+
+            **Data Tables:**
+            - **MART_TRANSACTION_SUMMARY** -- payment transactions with merchant and currency details
+          organization_profile: "INTERNAL"
+          organization_targets:
+            access:
+              - all_internal_accounts: true
+          locations:
+            access_regions:
+              - name: "ALL"
+          auto_fulfillment:
+            refresh_type: "SUB_DATABASE"
+            refresh_schedule: "10 MINUTE"

@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  - name: sfg_logistics_products
+    description: >
+      Organization listing that shares product catalog data with all accounts
+      in the organization.
+    config:
+      materialized: organization_listing
+      meta:
+        share_name: SFG_LOGISTICS_PRODUCTS
+        listing_name: SFG_LOGISTICS_PRODUCTS
+        publish: false
+        listing_manifest:
+          title: "SwissFlakes Logistics -- Products"
+          description: |
+            Products data product from SwissFlakes Logistics AG.
+
+            **Data Tables:**
+            - **MART_PRODUCT_CATALOG** -- product details with tariff classifications
+          organization_profile: "INTERNAL"
+          organization_targets:
+            access:
+              - all_internal_accounts: true
+          locations:
+            access_regions:
+              - name: "ALL"
+          auto_fulfillment:
+            refresh_type: "SUB_DATABASE"
+            refresh_schedule: "10 MINUTE"
