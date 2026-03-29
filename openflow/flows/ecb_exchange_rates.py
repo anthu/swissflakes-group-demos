@@ -4,13 +4,9 @@ Flow: ECB SDMX API -> SFG_PAY.RAW_TRANSACTIONS.ECB_EXCHANGE_RATES
 Pattern: Daily CSV (format=csvdata endpoint, polled on weekday schedule)
 
 ECB publishes exchange rates for CHF, USD, GBP, JPY against EUR daily at ~16:00 CET.
-The csvdata format returns CSV directly — no JSON wrapping needed, but we still use
-JoltTransformJSON after converting CSV lines to JSON records.
-
-Learnings from Flow 1 (transport.opendata.ch):
-- The base builder handles the full KuCoin v2 pattern (InvokeHTTP -> Jolt -> Streaming)
-- For CSV responses, the Jolt spec wraps the entire response body as a single VARIANT
-  (same {"*":"RAW.&"} spec works since InvokeHTTP returns the body as-is)
+The csvdata format returns CSV directly — not JSON. Uses ExecuteGroovyScript with
+JsonOutput.toJson() to properly escape the raw CSV body and wrap it into
+{"RAW":"<escaped_content>"} for VARIANT ingestion.
 """
 import argparse
 
@@ -22,6 +18,10 @@ class ECBExchangeRates(OpenflowFlowBuilder):
     @property
     def flow_name(self) -> str:
         return "ECB Exchange Rates"
+
+    @property
+    def use_groovy_json_wrapper(self) -> bool:
+        return True
 
     @property
     def param_context_name(self) -> str:
