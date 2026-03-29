@@ -26,6 +26,10 @@ class BAZGForeignTrade(OpenflowFlowBuilder):
         return "BAZG Foreign Trade"
 
     @property
+    def use_groovy_json_wrapper(self) -> bool:
+        return True
+
+    @property
     def param_context_name(self) -> str:
         return "BAZG Foreign Trade Params"
 

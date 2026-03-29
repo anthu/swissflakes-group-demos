@@ -159,6 +159,17 @@ class OpenflowFlowBuilder(ABC):
         return "GET"
 
     @property
+    def use_groovy_json_wrapper(self) -> bool:
+        """Override to True for non-JSON sources (CSV, HTML, XML).
+
+        When True, the builder creates an ExecuteGroovyScript processor
+        instead of JoltTransformJSON. The Groovy script uses
+        ``JsonOutput.toJson()`` to properly escape the raw content and
+        wraps it into ``{"RAW":"<escaped_content>"}`` for VARIANT ingestion.
+        """
+        return False
+
+    @property
     def jolt_spec(self) -> str:
         return '{"*":"RAW.&"}'
 
@@ -222,8 +233,11 @@ class OpenflowFlowBuilder(ABC):
         fetch = self._create_invoke_http(pg, (0, 0))
         components.processors["fetch"] = ProcessorRef(fetch.id, fetch.component.name, fetch.component.type)
 
-        jolt = self._create_jolt_transform(pg, (0, 200))
-        components.processors["jolt"] = ProcessorRef(jolt.id, jolt.component.name, jolt.component.type)
+        if self.use_groovy_json_wrapper:
+            transform = self._create_groovy_json_wrapper(pg, (0, 200))
+        else:
+            transform = self._create_jolt_transform(pg, (0, 200))
+        components.processors["transform"] = ProcessorRef(transform.id, transform.component.name, transform.component.type)
 
         stream = self._create_put_snowpipe_streaming(pg, wc_id, (0, 400))
         components.processors["stream"] = ProcessorRef(stream.id, stream.component.name, stream.component.type)
@@ -238,8 +252,8 @@ class OpenflowFlowBuilder(ABC):
         components.funnels["fail"] = fail_funnel.id
 
         print("[6/7] Creating connections")
-        nipyapi.canvas.create_connection(fetch, jolt, relationships=["Response"])
-        nipyapi.canvas.create_connection(jolt, stream, relationships=["success"])
+        nipyapi.canvas.create_connection(fetch, transform, relationships=["Response"])
+        nipyapi.canvas.create_connection(transform, stream, relationships=["success"])
         nipyapi.canvas.create_connection(stream, success_funnel, relationships=["success"])
         nipyapi.canvas.create_connection(stream, retry, relationships=["failure"])
         nipyapi.canvas.create_connection(retry, stream, relationships=["retry"])
@@ -283,6 +297,50 @@ class OpenflowFlowBuilder(ABC):
         config.auto_terminated_relationships = [
             "failure"
         ]
+        nipyapi.canvas.update_processor(proc, config)
+        return nipyapi.canvas.get_processor(proc.id, "id")
+
+    def _create_groovy_json_wrapper(self, pg, location):
+        """Create an ExecuteGroovyScript processor that wraps raw content as JSON.
+
+        Uses ``groovy.json.JsonOutput.toJson()`` to properly escape all special
+        characters (double quotes, newlines, backslashes, etc.) in the raw content
+        before wrapping it into ``{"RAW":"<escaped_content>"}``.
+
+        Uses ``session.read()`` + ``session.write()`` (separate callbacks) to avoid
+        NiFi's "FlowFile already in use" error that occurs when calling
+        ``session.putAttribute()`` on a FlowFile returned by ``session.write()``
+        with a StreamCallback.
+        """
+        proc_type = nipyapi.canvas.get_processor_type("ExecuteGroovyScript")
+        proc = nipyapi.canvas.create_processor(pg, proc_type, location, name="Wrap as VARIANT")
+
+        script = (
+            'import org.apache.commons.io.IOUtils\n'
+            'import groovy.json.JsonOutput\n'
+            'import java.nio.charset.StandardCharsets\n'
+            '\n'
+            'def flowFile = session.get()\n'
+            'if (!flowFile) return\n'
+            '\n'
+            'def content = ""\n'
+            'session.read(flowFile, { inputStream ->\n'
+            '    content = IOUtils.toString(inputStream, StandardCharsets.UTF_8)\n'
+            '} as org.apache.nifi.processor.io.InputStreamCallback)\n'
+            '\n'
+            'def json = \'{"RAW":\' + JsonOutput.toJson(content) + \'}\'\n'
+            '\n'
+            'flowFile = session.write(flowFile, { outputStream ->\n'
+            '    outputStream.write(json.getBytes(StandardCharsets.UTF_8))\n'
+            '} as org.apache.nifi.processor.io.OutputStreamCallback)\n'
+            '\n'
+            'session.transfer(flowFile, REL_SUCCESS)\n'
+        )
+
+        config = nipyapi.canvas.prepare_processor_config(proc, {
+            "Script Body": script,
+        })
+        config.auto_terminated_relationships = ["failure"]
         nipyapi.canvas.update_processor(proc, config)
         return nipyapi.canvas.get_processor(proc.id, "id")
 
