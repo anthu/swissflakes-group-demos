@@ -91,12 +91,7 @@ jobs:
         if snow dcm plan --target PR_EPHEMERAL --save-output -x; then
           echo "### DCM Plan for PR #${{ env.PR_NUMBER }} successful" >> $GITHUB_STEP_SUMMARY
 
-          ls -laR out/ || true
-          PLAN_METADATA_FILE=$(find out/ -name "plan_metadata.json" 2>/dev/null | head -1)
-          if [ -z "$PLAN_METADATA_FILE" ]; then
-            PLAN_METADATA_FILE=$(find out/ -name "*.json" 2>/dev/null | head -1)
-          fi
-          echo "Found plan file: $PLAN_METADATA_FILE"
+          PLAN_METADATA_FILE="out/plan.json"
           for OP_TYPE in CREATE ALTER DROP; do
             case $OP_TYPE in CREATE) OP_ICON="[CREATE]";; ALTER) OP_ICON="[ALTER]";; DROP) OP_ICON="[DROP]";; esac
             OP_COUNT=$(jq --arg OP_TYPE "$OP_TYPE" '.ddlChangeLog.operations[] | select(.operationType == $OP_TYPE)' "$PLAN_METADATA_FILE" | jq -s 'length')
@@ -117,10 +112,7 @@ jobs:
         else
           echo "### DCM Plan for PR #${{ env.PR_NUMBER }} failed" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          PLAN_ERR_FILE=$(find out/ -name "*.json" 2>/dev/null | head -1)
-          if [ -n "$PLAN_ERR_FILE" ]; then
-            jq -r '.error // empty' "$PLAN_ERR_FILE" >> $GITHUB_STEP_SUMMARY
-          fi
+          jq -r '.error // empty' out/plan.json >> $GITHUB_STEP_SUMMARY 2>/dev/null || true
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
           cp $GITHUB_STEP_SUMMARY summary/plan-summary.md
@@ -132,7 +124,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: pr-plan-output
-        path: ${{ env.DCM_PROJECT_PATH }}out/
+        path: ${{ env.DCM_PROJECT_PATH }}out/plan.json
 
     - name: Upload PLAN summary
       if: always()
@@ -153,16 +145,12 @@ jobs:
 
     - name: Check for destructive commands
       run: |
-        PLAN_FILE=$(find . -name "plan_metadata.json" 2>/dev/null | head -1)
-        if [ -z "$PLAN_FILE" ]; then
-          PLAN_FILE=$(find . -name "*.json" -path "*/out/*" 2>/dev/null | head -1)
-        fi
-        if [ -z "$PLAN_FILE" ]; then
+        PLAN_FILE="plan.json"
+        if [ ! -f "$PLAN_FILE" ]; then
           echo "### Plan output file not found!" >> $GITHUB_STEP_SUMMARY
           ls -laR .
           exit 1
         fi
-        echo "Using plan file: $PLAN_FILE"
 
         DESTRUCTIVE_COMMANDS=$(jq -c '[.ddlChangeLog.operations[] | select(.operationType == "DROP" and (.objectDomain | IN("DATABASE", "SCHEMA", "TABLE", "STAGE")))]' "$PLAN_FILE")
         TOTAL_DROPS=$(echo "$DESTRUCTIVE_COMMANDS" | jq 'length')
