@@ -1,1 +1,1 @@
-snowflake-cli @ git+https://github.com/snowflakedb/snowflake-cli.git
+snowflake-cli
