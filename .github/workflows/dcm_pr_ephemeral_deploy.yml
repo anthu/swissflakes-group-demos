@@ -83,6 +83,7 @@ jobs:
         cd ./$DCM_PROJECT_PATH
 
         snow sql -q "CREATE DATABASE IF NOT EXISTS SFG_LOGISTICS_PR${{ env.PR_NUMBER }} CLONE SFG_LOGISTICS" -x
+        snow sql -q "CREATE SCHEMA IF NOT EXISTS SFG_LOGISTICS_PR${{ env.PR_NUMBER }}.DCM" -x
 
         snow dcm create --target PR_EPHEMERAL --if-not-exists -x
 
