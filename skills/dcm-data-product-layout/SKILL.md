@@ -204,7 +204,7 @@ Checks: flat structure, manifest schema, `{{env_suffix}}` usage, minimal profile
 |---|---|
 | `dcm/` subfolder nesting | `manifest.yml` at DP root |
 | `project_name: 'DB.DCM.DATA_PRODUCT'` | `project_name: 'DB.DCM.DP_DB'` |
-| `account_identifier: HE80908` | `account_identifier: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"` |
+| `account_identifier: ACCT_LOCATOR` | `account_identifier: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"` |
 | `project_owner: ACCOUNTADMIN` | `project_owner: DP_{DB}_OWNER` |
 | Bare `CUSTOMERS.RAW` in SQL | `CUSTOMERS{{env_suffix}}.RAW` |
 | Bare DB name in COMMENT strings | `{{dp_name}}` template variable |

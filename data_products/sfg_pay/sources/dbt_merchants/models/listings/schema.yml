@@ -12,16 +12,59 @@ models:
         listing_name: SFG_PAY_MERCHANTS
         publish: false
         listing_manifest:
-          title: "SwissFlakes Pay -- Merchants"
+          title: "⚜️ SwissFlakes Pay – Merchants"
           description: |
-            Merchant data product from SwissFlakes Pay AG.
+            ## Overview
 
-            **Data Tables:**
-            - **MART_MERCHANT_OVERVIEW** -- merchant profiles with onboarding and compliance status
+            Gold-tier merchant mart with payout aggregates and fee exposure. Use for onboarding analytics, settlement monitoring, and partner health scoring.
+
+            ## What's included
+
+            - **MART_MERCHANT_OVERVIEW**: profile, business type, register id, settlement currency, fee rate, activity flags, payout counts, gross and net volumes, and payout period bounds.
+
+            ## Refresh and sharing
+
+            Auto-fulfillment uses `SUB_DATABASE` with a 10-minute schedule. Rebuild via `dbt_merchants`.
+
+            ## Quality
+
+            Mart layer is tagged **GOLD** under the group `DATA_QUALITY` convention.
           organization_profile: "INTERNAL"
+          resources:
+            documentation: "https://docs.snowflake.com/en/progaccess/listing-manifest-reference"
+          data_dictionary:
+            featured:
+              database: SFG_PAY
+              objects:
+                - name: MART_MERCHANT_OVERVIEW
+                  schema: MART_MERCHANTS
+                  domain: TABLE
+          data_preview:
+            has_pii: false
+          usage_examples:
+            - title: "Top merchants by gross volume"
+              description: "Rank active merchants by total gross CHF."
+              query: >
+                SELECT merchant_name, business_type, total_gross_amount_chf, total_net_amount_chf
+                FROM SFG_PAY.MART_MERCHANTS.MART_MERCHANT_OVERVIEW
+                WHERE is_active = TRUE
+                ORDER BY total_gross_amount_chf DESC
+                LIMIT 20;
+            - title: "Merchants by business type"
+              description: "Active merchant counts per business type."
+              query: >
+                SELECT business_type, COUNT(*) AS merchant_count
+                FROM SFG_PAY.MART_MERCHANTS.MART_MERCHANT_OVERVIEW
+                WHERE is_active = TRUE
+                GROUP BY 1
+                ORDER BY merchant_count DESC;
           organization_targets:
+            discovery:
+              - all_internal_accounts: true
             access:
               - all_internal_accounts: true
+          support_contact: "pay-support@example.com"
+          approver_contact: "pay-support@example.com"
           locations:
             access_regions:
               - name: "ALL"

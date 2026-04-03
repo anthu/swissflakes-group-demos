@@ -12,16 +12,59 @@ models:
         listing_name: SFG_LOGISTICS_LOCATIONS
         publish: false
         listing_manifest:
-          title: "SwissFlakes Logistics -- Locations"
+          title: "⚜️ SwissFlakes Logistics – Locations"
           description: |
-            Locations data product from SwissFlakes Logistics AG.
+            ## Overview
 
-            **Data Tables:**
-            - **MART_WAREHOUSE_CAPACITY** -- warehouse zones and capacity utilization
+            Gold-tier mart for warehouse footprint and zone-level pallet capacity. Use for network planning, capacity heatmaps, and fulfillment routing.
+
+            ## What's included
+
+            - **MART_WAREHOUSE_CAPACITY**: address, coordinates, declared capacity, zone mix (storage, cold, hazmat, receiving, loading, returns), and aggregates such as `total_zone_capacity_pallets`.
+
+            ## Refresh and sharing
+
+            Auto-fulfillment uses `SUB_DATABASE` with a 10-minute schedule. Rebuild via `dbt_locations`.
+
+            ## Quality
+
+            Mart layer is tagged **GOLD** under the group `DATA_QUALITY` convention.
           organization_profile: "INTERNAL"
+          resources:
+            documentation: "https://docs.snowflake.com/en/progaccess/listing-manifest-reference"
+          data_dictionary:
+            featured:
+              database: SFG_LOGISTICS
+              objects:
+                - name: MART_WAREHOUSE_CAPACITY
+                  schema: MART_LOCATIONS
+                  domain: TABLE
+          data_preview:
+            has_pii: false
+          usage_examples:
+            - title: "Active warehouses by canton"
+              description: "Count active sites per canton."
+              query: >
+                SELECT canton, COUNT(*) AS warehouse_count
+                FROM SFG_LOGISTICS.MART_LOCATIONS.MART_WAREHOUSE_CAPACITY
+                WHERE is_active = TRUE
+                GROUP BY 1
+                ORDER BY warehouse_count DESC;
+            - title: "Temperature-controlled capacity"
+              description: "Warehouses with cold-zone pallet capacity."
+              query: >
+                SELECT warehouse_name, city, cold_capacity_pallets, temp_controlled_zones
+                FROM SFG_LOGISTICS.MART_LOCATIONS.MART_WAREHOUSE_CAPACITY
+                WHERE cold_capacity_pallets > 0
+                ORDER BY cold_capacity_pallets DESC
+                LIMIT 30;
           organization_targets:
+            discovery:
+              - all_internal_accounts: true
             access:
               - all_internal_accounts: true
+          support_contact: "logistics-support@example.com"
+          approver_contact: "logistics-support@example.com"
           locations:
             access_regions:
               - name: "ALL"

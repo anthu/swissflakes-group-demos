@@ -42,9 +42,8 @@ for dp in CONSUMER_DPS:
 DP_TYPES[PLATFORM_DP] = "PLATFORM"
 
 HARDCODED_PATTERNS = [
-    re.compile(r"HE80908", re.IGNORECASE),
-    re.compile(r"\bANTON\b"),
-    re.compile(r"\bahuck\b"),
+    re.compile(r"\b[A-Z]{2}\d{5}\b"),
+    re.compile(r"\b[a-z]+\.[a-z]+@snowflake\.com\b", re.IGNORECASE),
 ]
 
 FORBIDDEN_PROFILE_KEYS = {"account", "user", "password", "warehouse", "threads", "authenticator"}

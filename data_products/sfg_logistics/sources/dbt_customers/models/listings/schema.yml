@@ -12,16 +12,59 @@ models:
         listing_name: SFG_LOGISTICS_CUSTOMERS
         publish: false
         listing_manifest:
-          title: "SwissFlakes Logistics -- Customers"
+          title: "⚜️ SwissFlakes Logistics – Customers"
           description: |
-            Customer data product from SwissFlakes Logistics AG.
+            ## Overview
 
-            **Data Tables:**
-            - **MART_CUSTOMER_OVERVIEW** -- business customers with contact details
+            Gold-tier mart for SwissFlakes Logistics AG: business customers with primary contact details. Suitable for CRM-style analytics, order linkage, and governance-aware customer views.
+
+            ## What's included
+
+            - **MART_CUSTOMER_OVERVIEW**: company, address, canton, country, active flag, primary contact name, role, email, and phone.
+
+            ## Refresh and sharing
+
+            Auto-fulfillment uses `SUB_DATABASE` with a 10-minute schedule. Rebuild by running the `dbt_customers` project.
+
+            ## Quality
+
+            Mart layer is tagged **GOLD** under the group `DATA_QUALITY` convention.
           organization_profile: "INTERNAL"
+          resources:
+            documentation: "https://docs.snowflake.com/en/progaccess/listing-manifest-reference"
+          data_dictionary:
+            featured:
+              database: SFG_LOGISTICS
+              objects:
+                - name: MART_CUSTOMER_OVERVIEW
+                  schema: MART_CUSTOMERS
+                  domain: TABLE
+          data_preview:
+            has_pii: false
+          usage_examples:
+            - title: "Active customers by canton"
+              description: "Count active customers per Swiss canton."
+              query: >
+                SELECT canton, COUNT(*) AS customer_count
+                FROM SFG_LOGISTICS.MART_CUSTOMERS.MART_CUSTOMER_OVERVIEW
+                WHERE is_active = TRUE
+                GROUP BY 1
+                ORDER BY customer_count DESC;
+            - title: "Customers in a city"
+              description: "Companies and primary contacts for a given city."
+              query: >
+                SELECT company_name, primary_contact_first_name, primary_contact_last_name, primary_contact_email
+                FROM SFG_LOGISTICS.MART_CUSTOMERS.MART_CUSTOMER_OVERVIEW
+                WHERE city = 'Basel' AND is_active = TRUE
+                ORDER BY company_name
+                LIMIT 50;
           organization_targets:
+            discovery:
+              - all_internal_accounts: true
             access:
               - all_internal_accounts: true
+          support_contact: "logistics-support@example.com"
+          approver_contact: "logistics-support@example.com"
           locations:
             access_regions:
               - name: "ALL"

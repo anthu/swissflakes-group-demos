@@ -12,16 +12,59 @@ models:
         listing_name: SFG_LOGISTICS_SHIPMENTS
         publish: false
         listing_manifest:
-          title: "SwissFlakes Logistics -- Shipments"
+          title: "⚜️ SwissFlakes Logistics – Shipments"
           description: |
-            Shipment data product from SwissFlakes Logistics AG.
+            ## Overview
 
-            **Data Tables:**
-            - **MART_SHIPMENT_TRACKING** -- shipment lifecycle with tracking events
+            Gold-tier shipment mart: one row per shipment with the latest tracking event, coordinates where available, and total event count. Supports operations, ETA views, and customs-oriented analysis (BAZG context).
+
+            ## What's included
+
+            - **MART_SHIPMENT_TRACKING**: status, route, weight and volume, customs flags, latest event metadata, and `total_events`.
+
+            ## Refresh and sharing
+
+            Auto-fulfillment uses `SUB_DATABASE` with a 10-minute schedule. Update via `dbt_shipments` runs.
+
+            ## Quality
+
+            Mart layer is tagged **GOLD** under the group `DATA_QUALITY` convention.
           organization_profile: "INTERNAL"
+          resources:
+            documentation: "https://docs.snowflake.com/en/progaccess/listing-manifest-reference"
+          data_dictionary:
+            featured:
+              database: SFG_LOGISTICS
+              objects:
+                - name: MART_SHIPMENT_TRACKING
+                  schema: MART_SHIPMENTS
+                  domain: TABLE
+          data_preview:
+            has_pii: false
+          usage_examples:
+            - title: "Shipments requiring customs"
+              description: "Shipments flagged for customs with destination and reference."
+              query: >
+                SELECT shipment_id, destination_city, status, customs_declaration_id
+                FROM SFG_LOGISTICS.MART_SHIPMENTS.MART_SHIPMENT_TRACKING
+                WHERE requires_customs = TRUE
+                ORDER BY created_at DESC
+                LIMIT 100;
+            - title: "Open shipments by origin"
+              description: "Count shipments not yet delivered, by origin warehouse."
+              query: >
+                SELECT origin_warehouse, COUNT(*) AS open_shipments
+                FROM SFG_LOGISTICS.MART_SHIPMENTS.MART_SHIPMENT_TRACKING
+                WHERE delivered_at IS NULL
+                GROUP BY 1
+                ORDER BY open_shipments DESC;
           organization_targets:
+            discovery:
+              - all_internal_accounts: true
             access:
               - all_internal_accounts: true
+          support_contact: "logistics-support@example.com"
+          approver_contact: "logistics-support@example.com"
           locations:
             access_regions:
               - name: "ALL"

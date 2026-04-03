@@ -13,16 +13,59 @@ models:
         listing_name: SFG_LOGISTICS_FLEET
         publish: false
         listing_manifest:
-          title: "SwissFlakes Logistics -- Fleet"
+          title: "⚜️ SwissFlakes Logistics – Fleet"
           description: |
-            Fleet data product from SwissFlakes Logistics AG.
+            ## Overview
 
-            **Data Tables:**
-            - **MART_FLEET_STATUS** -- vehicle overview with latest GPS positions
+            Gold-tier mart for SwissFlakes Logistics AG fleet operations: one row per vehicle with the latest GPS snapshot and a rolling position count. Built from staging in `STG_FLEET`. Use for operations dashboards and joins to shipments.
+
+            ## What's included
+
+            - **MART_FLEET_STATUS**: vehicle attributes, latest GPS (latitude, longitude, speed, heading, moving flag), and `total_positions`.
+
+            ## Refresh and sharing
+
+            Auto-fulfillment uses `SUB_DATABASE` with a 10-minute schedule for cross-region consumers. Refresh the mart by running the `dbt_fleet` project in Snowflake.
+
+            ## Quality
+
+            Mart layer is tagged **GOLD** under the group `DATA_QUALITY` convention.
           organization_profile: "INTERNAL"
+          resources:
+            documentation: "https://docs.snowflake.com/en/progaccess/listing-manifest-reference"
+          data_dictionary:
+            featured:
+              database: SFG_LOGISTICS
+              objects:
+                - name: MART_FLEET_STATUS
+                  schema: MART_FLEET
+                  domain: TABLE
+          data_preview:
+            has_pii: false
+          usage_examples:
+            - title: "Active vehicles by home base"
+              description: "Count active vehicles grouped by depot city."
+              query: >
+                SELECT home_base, COUNT(*) AS vehicle_count
+                FROM SFG_LOGISTICS.MART_FLEET.MART_FLEET_STATUS
+                WHERE is_active = TRUE
+                GROUP BY 1
+                ORDER BY vehicle_count DESC;
+            - title: "Recently moving vehicles"
+              description: "Latest speed and timestamp where the vehicle was moving."
+              query: >
+                SELECT plate_number, home_base, latest_speed_kmh, latest_recorded_at
+                FROM SFG_LOGISTICS.MART_FLEET.MART_FLEET_STATUS
+                WHERE latest_is_moving = TRUE
+                ORDER BY latest_recorded_at DESC
+                LIMIT 50;
           organization_targets:
+            discovery:
+              - all_internal_accounts: true
             access:
               - all_internal_accounts: true
+          support_contact: "logistics-support@example.com"
+          approver_contact: "logistics-support@example.com"
           locations:
             access_regions:
               - name: "ALL"

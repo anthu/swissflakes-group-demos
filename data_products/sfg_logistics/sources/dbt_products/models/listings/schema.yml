@@ -12,16 +12,58 @@ models:
         listing_name: SFG_LOGISTICS_PRODUCTS
         publish: false
         listing_manifest:
-          title: "SwissFlakes Logistics -- Products"
+          title: "⚜️ SwissFlakes Logistics – Products"
           description: |
-            Products data product from SwissFlakes Logistics AG.
+            ## Overview
 
-            **Data Tables:**
-            - **MART_PRODUCT_CATALOG** -- product details with tariff classifications
+            Gold-tier product catalog with harmonized tariff and landed-cost fields. Use for pricing analytics, customs classification review, and hazardous-goods reporting.
+
+            ## What's included
+
+            - **MART_PRODUCT_CATALOG**: product attributes, HS code, duty and VAT rates, preferential rates, computed duty and VAT amounts, and `total_landed_cost_chf`.
+
+            ## Refresh and sharing
+
+            Auto-fulfillment uses `SUB_DATABASE` with a 10-minute schedule. Rebuild via `dbt_products`.
+
+            ## Quality
+
+            Mart layer is tagged **GOLD** under the group `DATA_QUALITY` convention.
           organization_profile: "INTERNAL"
+          resources:
+            documentation: "https://docs.snowflake.com/en/progaccess/listing-manifest-reference"
+          data_dictionary:
+            featured:
+              database: SFG_LOGISTICS
+              objects:
+                - name: MART_PRODUCT_CATALOG
+                  schema: MART_PRODUCTS
+                  domain: TABLE
+          data_preview:
+            has_pii: false
+          usage_examples:
+            - title: "Products requiring customs declaration"
+              description: "Rows where a customs declaration is required."
+              query: >
+                SELECT product_id, product_name, hs_code, origin_country
+                FROM SFG_LOGISTICS.MART_PRODUCTS.MART_PRODUCT_CATALOG
+                WHERE requires_customs_declaration = TRUE
+                ORDER BY product_name
+                LIMIT 50;
+            - title: "Average landed cost by category"
+              description: "Mean landed cost in CHF per product category."
+              query: >
+                SELECT category, ROUND(AVG(total_landed_cost_chf), 2) AS avg_landed_chf
+                FROM SFG_LOGISTICS.MART_PRODUCTS.MART_PRODUCT_CATALOG
+                GROUP BY 1
+                ORDER BY avg_landed_chf DESC;
           organization_targets:
+            discovery:
+              - all_internal_accounts: true
             access:
               - all_internal_accounts: true
+          support_contact: "logistics-support@example.com"
+          approver_contact: "logistics-support@example.com"
           locations:
             access_regions:
               - name: "ALL"

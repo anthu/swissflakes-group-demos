@@ -9,6 +9,10 @@ DEFINE SCHEMA SFG_PAY{{env_suffix}}.STG_{{dp}};
 DEFINE SCHEMA SFG_PAY{{env_suffix}}.MART_{{dp}};
 {% endfor %}
 
+-- Openflow target table: managed by DCM to prevent accidental CREATE OR REPLACE
+-- which would invalidate SSV2 pipe bindings.
+DEFINE TABLE SFG_PAY{{env_suffix}}.RAW_TRANSACTIONS.ECB_EXCHANGE_RATES (RAW VARIANT);
+
 DEFINE ROLE DP_SFG_PAY{{env_suffix}}_OWNER
     COMMENT = 'Full control for {{dp_name}} domain';
 

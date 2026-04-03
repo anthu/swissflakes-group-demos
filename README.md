@@ -72,6 +72,34 @@ swissflakes-group-demos/
 └── docs/                       # Workshop guides
 ```
 
+## CI/CD: Ephemeral PR Environments
+
+When a pull request is opened against `main` that touches `data_products/sfg_logistics/**`, GitHub Actions automatically:
+
+1. **Creates** an isolated Snowflake environment (`SFG_LOGISTICS_PR<number>`) via DCM
+2. **Deploys** all schemas, tables, roles, and grants into it
+3. **Tests** data quality expectations
+4. **Posts** a summary (CREATE/ALTER/DROP counts + test results) as a PR comment
+5. **Tears down** the entire environment when the PR is closed or merged
+
+### GitHub Setup
+
+| Name | Type | Description |
+|------|------|-------------|
+| `DEPLOYER_PAT` | Secret | Snowflake service user password |
+| `SNOWFLAKE_USER` | Variable | Service user name (e.g. `GITHUB_ACTIONS_SVC`) |
+| `SNOWFLAKE_ACCOUNT` | Variable | Snowflake account identifier |
+| `SNOWFLAKE_CI_ROLE` | Variable | Role with CREATE DATABASE + CREATE ROLE privileges |
+
+### Snowflake Pre-requisites
+
+- A service user whose role (set via `SNOWFLAKE_CI_ROLE`) has `CREATE DATABASE` and `CREATE ROLE` on the account
+- The role must be able to grant roles to itself (for the ephemeral owner role hierarchy)
+
+### Manual Teardown
+
+If a teardown fails or you need to clean up manually, use `workflow_dispatch` on the teardown workflow and provide the PR number.
+
 ## Regulations Covered
 
 | Regulation | Domain |

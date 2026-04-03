@@ -38,7 +38,7 @@ class ASTRATrafficCounts(OpenflowFlowBuilder):
     def api_url(self) -> str:
         return (
             "https://data.geo.admin.ch/api/stac/v1/collections/"
-            "ch.astra.strassenverkehrszaehlung-uebergeordnetes-netz/items?limit=100"
+            "ch.astra.strassenverkehrszaehlung-uebergeordnet/items?limit=100"
         )
 
     @property

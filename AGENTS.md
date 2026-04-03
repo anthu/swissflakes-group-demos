@@ -64,7 +64,24 @@ Listings are embedded directly in each dbt project -- no separate listing projec
 - `models/listings/{listing_name}.sql` -- `{{ dbt_snowflake_listings.share_model(ref('mart_...')) }}`
 - `models/listings/schema.yml` -- `organization_listing` materialization config + manifest YAML
 - DCM definition (`02_dbt_*.sql`) includes `EXTERNAL_ACCESS_INTEGRATIONS = (SWISSFLAKES_GITHUB_EAI)` for `dbt deps`
-- All listings use `publish: false` (DRAFT) until organization profile is configured; set `publish: true` to publish
+- **Access scope:** Every listing manifest sets `organization_targets.discovery` and `organization_targets.access` to `all_internal_accounts: true` so the whole org can discover and consume (subject to roles in the consumer account).
+- **Publish state:** Every listing keeps `publish: false` so it stays **unpublished** (DRAFT in the UI). Set `publish: true` only when you intentionally publish (requires organization profile where applicable).
+
+**Listing titles:** Prefix with **⚜️** so listings are easy to spot in the Internal Marketplace UI.
+
+**Manifest contacts (listing support / approver):**
+- Logistics listings: `logistics-support@example.com` (both `support_contact` and `approver_contact`)
+- Pay listings: `pay-support@example.com`
+
+These addresses appear only in listing manifests (explicit exception to avoiding personal identifiers in repo).
+
+**Documentation link:** Manifests use Snowflake’s [listing manifest reference](https://docs.snowflake.com/en/progaccess/listing-manifest-reference) as `resources.documentation` until a product-specific public URL exists.
+
+**Data preview vs Marketplace listings:** Public Marketplace listings (e.g. KuCoin-style products) are configured in Provider Studio, where “Save and Create Data Dictionary” drives previews and refresh behavior ([provider listings reference](https://docs.snowflake.com/en/collaboration/provider-listings-reference)). **Organizational** listings use the same manifest family: include optional `data_preview` (`has_pii: false` unless you have a safe pattern) alongside `data_dictionary.featured` so consumers can enable **Data preview** in the listing UI. **`EXECUTE DBT PROJECT` uses the dbt sources last uploaded by `snow dcm deploy`** for that DCM project; local edits to `sources/dbt_*` are invisible until you redeploy the parent `data_products/{name}` bundle. **Package caveat (`dbt-snowflake-listings` v0.2.3):** `metadata_overrides.objects[].pii_columns` is serialized twice in `_serialize_manifest` (duplicate YAML key); avoid `pii_columns` lists in manifest until the package fixes that macro. Snowflake can still classify and mask preview columns separately ([provider reference](https://docs.snowflake.com/en/collaboration/provider-listings-reference)).
+
+**Column descriptions in the listing UI** come from **Snowflake column COMMENTs** on the shared table, not from dbt `schema.yml` alone. Each sub-DP sets `+persist_docs: { relation: true, columns: true }` on **marts** in `dbt_project.yml` so `models/marts/schema.yml` descriptions are written to the warehouse when marts run. Re-run `dbt run` (or `--full-refresh` on the mart if needed) after changing descriptions.
+
+**Note:** `models/listings/schema.yml` must be plain YAML (no Jinja in `listing_manifest`); Snowflake DCM / `deps_compile` validates it before dbt renders Jinja.
 
 **EAI:** `SWISSFLAKES_GITHUB_EAI` allows egress to `github.com` + `codeload.github.com` for dbt package downloads.
 
@@ -209,6 +226,6 @@ On Snow CLI 3.16.0, `snow dcm deploy` fails when `manifest.yml` uses Jinja templ
 
 After any change, run:
 ```bash
-grep -r "ahuck\|he80908\|ANTON\|SFSEEUROPE" . --include='*.yml' --include='*.yaml' --include='*.sql' --include='*.md' --include='*.tf' --include='*.py' --include='*.json'
+grep -rP "\b[A-Z]{2}\d{5}\b|[a-z]+\.[a-z]+@snowflake\.com" . --include='*.yml' --include='*.yaml' --include='*.sql' --include='*.md' --include='*.tf' --include='*.py' --include='*.json'
 ```
 Must return 0 matches.
