@@ -12,16 +12,57 @@ models:
         listing_name: SFG_LOGISTICS_ORDERS
         publish: false
         listing_manifest:
-          title: "SwissFlakes Logistics -- Orders"
+          title: "⚜️ SwissFlakes Logistics – Orders"
           description: |
-            Orders data product from SwissFlakes Logistics AG.
+            ## Overview
 
-            **Data Tables:**
-            - **MART_ORDER_SUMMARY** -- order headers with line item aggregations
+            Gold-tier order summary: header-level totals aligned with rolled-up line items. Use for revenue-by-order views, fulfillment SLAs, and customer order history.
+
+            ## What's included
+
+            - **MART_ORDER_SUMMARY**: customer, dates, status, delivery address, currency, warehouse origin, header versus calculated totals, line counts, and distinct product counts.
+
+            ## Refresh and sharing
+
+            Auto-fulfillment uses `SUB_DATABASE` with a 10-minute schedule. Rebuild via `dbt_orders`.
+
+            ## Quality
+
+            Mart layer is tagged **GOLD** under the group `DATA_QUALITY` convention.
           organization_profile: "INTERNAL"
+          resources:
+            documentation: "https://docs.snowflake.com/en/progaccess/listing-manifest-reference"
+          data_dictionary:
+            featured:
+              database: SFG_LOGISTICS
+              objects:
+                - name: MART_ORDER_SUMMARY
+                  schema: MART_ORDERS
+                  domain: TABLE
+          data_preview:
+            has_pii: false
+          usage_examples:
+            - title: "Order totals by status"
+              description: "Sum calculated CHF totals grouped by order status."
+              query: >
+                SELECT status, COUNT(*) AS orders, ROUND(SUM(calculated_total_chf), 2) AS revenue_chf
+                FROM SFG_LOGISTICS.MART_ORDERS.MART_ORDER_SUMMARY
+                GROUP BY 1
+                ORDER BY revenue_chf DESC;
+            - title: "Largest orders by line count"
+              description: "Orders with the most line items."
+              query: >
+                SELECT order_id, customer_id, line_item_count, calculated_total_chf
+                FROM SFG_LOGISTICS.MART_ORDERS.MART_ORDER_SUMMARY
+                ORDER BY line_item_count DESC
+                LIMIT 25;
           organization_targets:
+            discovery:
+              - all_internal_accounts: true
             access:
               - all_internal_accounts: true
+          support_contact: "anton.huck+lgs@snowflake.com"
+          approver_contact: "anton.huck+lgs@snowflake.com"
           locations:
             access_regions:
               - name: "ALL"

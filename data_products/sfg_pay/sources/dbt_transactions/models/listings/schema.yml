@@ -12,16 +12,58 @@ models:
         listing_name: SFG_PAY_TRANSACTIONS
         publish: false
         listing_manifest:
-          title: "SwissFlakes Pay -- Transactions"
+          title: "⚜️ SwissFlakes Pay – Transactions"
           description: |
-            Transaction data product from SwissFlakes Pay AG.
+            ## Overview
 
-            **Data Tables:**
-            - **MART_TRANSACTION_SUMMARY** -- payment transactions with merchant and currency details
+            Gold-tier payment mart: one row per payment with refund rollups and net amount. Use for payment-method mix, AML-flagged traffic, and reconciliation views.
+
+            ## What's included
+
+            - **MART_TRANSACTION_SUMMARY**: amounts, currency, method, card brand, status, international and AML flags, refund counts and totals, and `net_amount_chf`.
+
+            ## Refresh and sharing
+
+            Auto-fulfillment uses `SUB_DATABASE` with a 10-minute schedule. Rebuild via `dbt_transactions`.
+
+            ## Quality
+
+            Mart layer is tagged **GOLD** under the group `DATA_QUALITY` convention.
           organization_profile: "INTERNAL"
+          resources:
+            documentation: "https://docs.snowflake.com/en/progaccess/listing-manifest-reference"
+          data_dictionary:
+            featured:
+              database: SFG_PAY
+              objects:
+                - name: MART_TRANSACTION_SUMMARY
+                  schema: MART_TRANSACTIONS
+                  domain: TABLE
+          data_preview:
+            has_pii: false
+          usage_examples:
+            - title: "Volume by payment method"
+              description: "Payment count and net CHF by method."
+              query: >
+                SELECT payment_method, COUNT(*) AS payments, ROUND(SUM(net_amount_chf), 2) AS net_chf
+                FROM SFG_PAY.MART_TRANSACTIONS.MART_TRANSACTION_SUMMARY
+                GROUP BY 1
+                ORDER BY net_chf DESC;
+            - title: "Payments requiring AML review"
+              description: "Rows flagged for AML checks."
+              query: >
+                SELECT payment_id, merchant_id, amount_chf, status, created_at
+                FROM SFG_PAY.MART_TRANSACTIONS.MART_TRANSACTION_SUMMARY
+                WHERE requires_aml_check = TRUE
+                ORDER BY created_at DESC
+                LIMIT 50;
           organization_targets:
+            discovery:
+              - all_internal_accounts: true
             access:
               - all_internal_accounts: true
+          support_contact: "anton.huck+pay@snowflake.com"
+          approver_contact: "anton.huck+pay@snowflake.com"
           locations:
             access_regions:
               - name: "ALL"

@@ -1,0 +1,330 @@
+name: DCM PR Ephemeral Deploy
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: ["main"]
+    paths:
+      - 'data_products/sfg_logistics/**'
+
+  workflow_dispatch:
+
+env:
+  DCM_PROJECT_PATH: data_products/sfg_logistics/
+  SNOWFLAKE_PASSWORD: ${{ secrets.DEPLOYER_PAT }}
+  SNOWFLAKE_USER: ${{ vars.SNOWFLAKE_USER }}
+  SNOWFLAKE_ACCOUNT: ${{ vars.SNOWFLAKE_ACCOUNT }}
+  SNOWFLAKE_CI_ROLE: ${{ vars.SNOWFLAKE_CI_ROLE }}
+  PR_NUMBER: ${{ github.event.pull_request.number }}
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  PARSE_MANIFEST:
+    runs-on: ubuntu-latest
+    outputs:
+      account: ${{ steps.get_targets.outputs.account }}
+      role: ${{ steps.get_targets.outputs.role }}
+      project_name: ${{ steps.get_targets.outputs.project_name }}
+    steps:
+    - name: Clone Repo
+      uses: actions/checkout@v4
+
+    - name: Get targets from manifest
+      id: get_targets
+      run: |
+        MANIFEST_PATH="${{ env.DCM_PROJECT_PATH }}manifest.yml"
+
+        echo "PR Ephemeral target for PR #${{ env.PR_NUMBER }}" >> $GITHUB_STEP_SUMMARY
+
+        ACCOUNT=$(yq eval '.targets.PR_EPHEMERAL.account_identifier' "$MANIFEST_PATH" | sed 's/"//g' | sed "s/'//g")
+        ROLE=$(yq eval '.targets.PR_EPHEMERAL.project_owner' "$MANIFEST_PATH" | sed 's/"//g' | sed "s/'//g")
+        PROJECT_NAME=$(yq eval '.targets.PR_EPHEMERAL.project_name' "$MANIFEST_PATH" | sed 's/"//g' | sed "s/'//g")
+
+        echo "account=$ACCOUNT" >> $GITHUB_OUTPUT
+        echo "role=$ROLE" >> $GITHUB_OUTPUT
+        echo "project_name=$PROJECT_NAME" >> $GITHUB_OUTPUT
+
+        {
+          echo "**PR_EPHEMERAL:**"
+          echo "- Snowflake account: \`$ACCOUNT\`"
+          echo "- Project object: \`$PROJECT_NAME\`"
+          echo "- Project owner: \`$ROLE\`"
+        } >> $GITHUB_STEP_SUMMARY
+
+  PLAN:
+    needs: PARSE_MANIFEST
+    runs-on: ubuntu-latest
+    env:
+      SNOWFLAKE_ROLE: ${{ vars.SNOWFLAKE_CI_ROLE }}
+    steps:
+    - name: Clone Repo
+      uses: actions/checkout@v4
+
+    - name: Setup SnowCLI
+      run: pip install git+https://github.com/snowflakedb/snowflake-cli.git
+
+    - name: Create DCM project and run PLAN
+      id: plan
+      run: |
+        cd ./$DCM_PROJECT_PATH
+        snow dcm create --target PR_EPHEMERAL --if-not-exists -x
+
+        mkdir -p summary
+
+        if snow dcm plan --target PR_EPHEMERAL --save-output -x; then
+          echo "### DCM Plan for PR #${{ env.PR_NUMBER }} successful" >> $GITHUB_STEP_SUMMARY
+
+          PLAN_METADATA_FILE="out/plan/plan_metadata.json"
+          for OP_TYPE in CREATE ALTER DROP; do
+            case $OP_TYPE in CREATE) OP_ICON="[CREATE]";; ALTER) OP_ICON="[ALTER]";; DROP) OP_ICON="[DROP]";; esac
+            OP_COUNT=$(jq --arg OP_TYPE "$OP_TYPE" '.ddlChangeLog.operations[] | select(.operationType == $OP_TYPE)' "$PLAN_METADATA_FILE" | jq -s 'length')
+            echo "**${OP_ICON} ${OP_TYPE} operations: $OP_COUNT**" >> $GITHUB_STEP_SUMMARY
+            if [ "$OP_COUNT" -gt 0 ]; then
+              OBJECT_DOMAINS=$(jq -r --arg OP_TYPE "$OP_TYPE" '[.ddlChangeLog.operations[] | select(.operationType == $OP_TYPE) | .objectDomain // .association | select(. != null)] | unique | .[]' "$PLAN_METADATA_FILE")
+              echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+              for DOMAIN in $OBJECT_DOMAINS; do
+                DOMAIN_COUNT=$(jq --arg OP_TYPE "$OP_TYPE" --arg DOMAIN "$DOMAIN" '.ddlChangeLog.operations[] | select(.operationType == $OP_TYPE and (.objectDomain // .association) == $DOMAIN)' "$PLAN_METADATA_FILE" | jq -s 'length')
+                echo "- $DOMAIN: $DOMAIN_COUNT" >> $GITHUB_STEP_SUMMARY
+              done
+              echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+
+          cp $GITHUB_STEP_SUMMARY summary/plan-summary.md
+
+        else
+          echo "### DCM Plan for PR #${{ env.PR_NUMBER }} failed" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          jq -r '.error' out/plan/plan_metadata.json >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
+          cp $GITHUB_STEP_SUMMARY summary/plan-summary.md
+          exit 1
+        fi
+
+    - name: Upload PLAN output
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: pr-plan-output
+        path: ${{ env.DCM_PROJECT_PATH }}out/plan/plan_metadata.json
+
+    - name: Upload PLAN summary
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: pr-plan-summary
+        path: ${{ env.DCM_PROJECT_PATH }}summary/plan-summary.md
+
+  DROP_DETECTION:
+    needs: PLAN
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download plan artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: pr-plan-output
+        path: ${{ env.DCM_PROJECT_PATH }}out/plan/
+
+    - name: Check for destructive commands
+      run: |
+        PLAN_FILE="${{ env.DCM_PROJECT_PATH }}out/plan/plan_metadata.json"
+        if [ ! -f "$PLAN_FILE" ]; then
+          echo "### Plan output file not found!" >> $GITHUB_STEP_SUMMARY
+          exit 1
+        fi
+
+        DESTRUCTIVE_COMMANDS=$(jq -c '[.ddlChangeLog.operations[] | select(.operationType == "DROP" and (.objectDomain | IN("DATABASE", "SCHEMA", "TABLE", "STAGE")))]' "$PLAN_FILE")
+        TOTAL_DROPS=$(echo "$DESTRUCTIVE_COMMANDS" | jq 'length')
+        if [[ $TOTAL_DROPS -gt 0 ]]; then
+          DATABASE_DROPS=$(echo "$DESTRUCTIVE_COMMANDS" | jq '[.[] | select(.objectDomain == "DATABASE")] | length')
+          SCHEMA_DROPS=$(echo "$DESTRUCTIVE_COMMANDS" | jq '[.[] | select(.objectDomain == "SCHEMA")] | length')
+          TABLE_DROPS=$(echo "$DESTRUCTIVE_COMMANDS" | jq '[.[] | select(.objectDomain == "TABLE")] | length')
+          STAGE_DROPS=$(echo "$DESTRUCTIVE_COMMANDS" | jq '[.[] | select(.objectDomain == "STAGE")] | length')
+
+          {
+            echo "### PLAN contains DROP commands"
+            echo "The plan contains **${TOTAL_DROPS}** DROP operation(s):"
+            echo "\`\`\`"
+            if [[ $DATABASE_DROPS -gt 0 ]]; then echo "- Databases: ${DATABASE_DROPS}"; fi
+            if [[ $SCHEMA_DROPS -gt 0 ]]; then echo "- Schemas: ${SCHEMA_DROPS}"; fi
+            if [[ $TABLE_DROPS -gt 0 ]]; then echo "- Tables: ${TABLE_DROPS}"; fi
+            if [[ $STAGE_DROPS -gt 0 ]]; then echo "- Stages: ${STAGE_DROPS}"; fi
+            echo "\`\`\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          exit 1
+        else
+          echo "### No destructive DROP operations found" >> $GITHUB_STEP_SUMMARY
+        fi
+
+  DEPLOY:
+    needs: [PARSE_MANIFEST, DROP_DETECTION]
+    runs-on: ubuntu-latest
+    env:
+      SNOWFLAKE_ROLE: ${{ vars.SNOWFLAKE_CI_ROLE }}
+    steps:
+    - name: Clone Repo
+      uses: actions/checkout@v4
+
+    - name: Setup SnowCLI
+      run: pip install git+https://github.com/snowflakedb/snowflake-cli.git
+
+    - name: Deploy ephemeral environment
+      run: |
+        cd ./$DCM_PROJECT_PATH
+
+        deploy_output=$(snow dcm deploy --target PR_EPHEMERAL --alias "pr-${{ env.PR_NUMBER }}" -x 2>&1)
+        EXIT_CODE=$?
+
+        if [ $EXIT_CODE -eq 0 ]; then
+          echo "### DCM Deploy for PR #${{ env.PR_NUMBER }} successful" >> $GITHUB_STEP_SUMMARY
+        else
+          {
+            echo "### DCM Deploy for PR #${{ env.PR_NUMBER }} failed"
+            echo "\`\`\`"
+            echo "$deploy_output"
+            echo "\`\`\`"
+          } >> $GITHUB_STEP_SUMMARY
+          exit $EXIT_CODE
+        fi
+
+  REFRESH_DYNAMIC_TABLES:
+    needs: [PARSE_MANIFEST, DEPLOY]
+    runs-on: ubuntu-latest
+    env:
+      SNOWFLAKE_ROLE: ${{ vars.SNOWFLAKE_CI_ROLE }}
+    steps:
+    - name: Clone Repo
+      uses: actions/checkout@v4
+
+    - name: Setup SnowCLI
+      run: pip install git+https://github.com/snowflakedb/snowflake-cli.git
+
+    - name: Refresh Dynamic Tables
+      run: |
+        cd ./$DCM_PROJECT_PATH
+        set +e
+        REFRESH_OUTPUT=$(snow dcm refresh --target PR_EPHEMERAL -x 2>&1)
+        EXIT_CODE=$?
+        set -e
+
+        if [ $EXIT_CODE -eq 0 ]; then
+          echo "### Dynamic Tables Refresh Successful" >> $GITHUB_STEP_SUMMARY
+        else
+          {
+            echo "### Dynamic Tables Refresh Failed"
+            echo "\`\`\`"
+            echo "$REFRESH_OUTPUT"
+            echo "\`\`\`"
+          } >> $GITHUB_STEP_SUMMARY
+          exit $EXIT_CODE
+        fi
+
+  TEST_EXPECTATIONS:
+    needs: [PARSE_MANIFEST, REFRESH_DYNAMIC_TABLES]
+    runs-on: ubuntu-latest
+    env:
+      SNOWFLAKE_ROLE: ${{ vars.SNOWFLAKE_CI_ROLE }}
+    steps:
+    - name: Clone Repo
+      uses: actions/checkout@v4
+
+    - name: Setup SnowCLI
+      run: pip install git+https://github.com/snowflakedb/snowflake-cli.git
+
+    - name: Test Data Quality Expectations
+      run: |
+        cd ./$DCM_PROJECT_PATH
+        set +e
+        TEST_OUTPUT=$(snow dcm test --target PR_EPHEMERAL -x 2>&1)
+        EXIT_CODE=$?
+        set -e
+
+        if [ $EXIT_CODE -eq 0 ]; then
+          {
+            echo "### Data Quality Tests Passed"
+            echo "All expectations met."
+          } >> $GITHUB_STEP_SUMMARY
+        else
+          {
+            echo "### Data Quality Tests Failed"
+            echo "\`\`\`"
+            echo "$TEST_OUTPUT"
+            echo "\`\`\`"
+          } >> $GITHUB_STEP_SUMMARY
+          exit $EXIT_CODE
+        fi
+
+  COMMENT_ON_PR:
+    needs: [PLAN, DROP_DETECTION, DEPLOY, REFRESH_DYNAMIC_TABLES, TEST_EXPECTATIONS]
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Download plan summary
+        uses: actions/download-artifact@v4
+        with:
+          pattern: '*-summary'
+          merge-multiple: true
+
+      - name: Post summary to PR
+        uses: actions/github-script@v7
+        env:
+          PLAN_RESULT: ${{ needs.PLAN.result }}
+          DROP_DETECTION_RESULT: ${{ needs.DROP_DETECTION.result }}
+          DEPLOY_RESULT: ${{ needs.DEPLOY.result }}
+          REFRESH_RESULT: ${{ needs.REFRESH_DYNAMIC_TABLES.result }}
+          TEST_RESULT: ${{ needs.TEST_EXPECTATIONS.result }}
+        with:
+          script: |
+            const fs = require('fs');
+
+            const getEmoji = (result) => {
+                const r = (result || '').toLowerCase();
+                if (r === 'success') return 'PASS';
+                if (r === 'failure') return 'FAIL';
+                if (r === 'skipped') return 'SKIP';
+                return 'WARN';
+            };
+
+            const jobs = {
+              'Plan': process.env.PLAN_RESULT,
+              'Drop Detection': process.env.DROP_DETECTION_RESULT,
+              'Deploy': process.env.DEPLOY_RESULT,
+              'Refresh Dynamic Tables': process.env.REFRESH_RESULT,
+              'Test Expectations': process.env.TEST_RESULT
+            };
+
+            const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            let comment = `### DCM Ephemeral Environment - PR #${context.issue.number}\n\n`;
+            comment += `| Job | Result |\n|-----|--------|\n`;
+
+            for (const [job, result] of Object.entries(jobs)) {
+              comment += `| ${job} | ${getEmoji(result)} ${result || 'n/a'} |\n`;
+            }
+
+            let planSummary = '';
+            try {
+              planSummary = fs.readFileSync('plan-summary.md', 'utf8');
+              comment += `\n---\n${planSummary}\n`;
+            } catch (error) {
+              comment += `\nCould not load plan summary.\n`;
+            }
+
+            comment += `\n[View full workflow run](${runUrl})`;
+
+            if (context.eventName === 'pull_request') {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            }

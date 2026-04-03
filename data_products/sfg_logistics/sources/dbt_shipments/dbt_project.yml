@@ -25,3 +25,6 @@ models:
     marts:
       +schema: MART_SHIPMENTS
       +materialized: table
+      +persist_docs:
+        relation: true
+        columns: true
