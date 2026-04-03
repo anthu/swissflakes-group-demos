@@ -12,17 +12,59 @@ models:
         listing_name: SFG_LOGISTICS_OPEN_TRANSPORT
         publish: false
         listing_manifest:
-          title: "SwissFlakes Logistics -- Open Transport"
+          title: "⚜️ SwissFlakes Logistics – Open Transport"
           description: |
-            Open transport data product from SwissFlakes Logistics AG,
-            sourced from Swiss public transport APIs (SBB, transport.opendata.ch).
+            ## Overview
 
-            **Data Tables:**
-            - **MART_SWISS_RAIL_OVERVIEW** -- Swiss rail connections and stationboard data
+            Gold-tier mart combining Swiss open rail data: transport.opendata.ch connections and SBB stationboard-style feeds. Use for delay analysis, line performance, and station-level operations views.
+
+            ## What's included
+
+            - **MART_SWISS_RAIL_OVERVIEW**: departure time, station, line, product family, operator, optional coordinates, delay minutes, platform, and `data_source` discriminator.
+
+            ## Refresh and sharing
+
+            Auto-fulfillment uses `SUB_DATABASE` with a 10-minute schedule. Upstream RAW tables are fed by Openflow; rebuild marts via `dbt_open_transport`.
+
+            ## Quality
+
+            Mart layer is tagged **GOLD** under the group `DATA_QUALITY` convention.
           organization_profile: "INTERNAL"
+          resources:
+            documentation: "https://docs.snowflake.com/en/progaccess/listing-manifest-reference"
+          data_dictionary:
+            featured:
+              database: SFG_LOGISTICS
+              objects:
+                - name: MART_SWISS_RAIL_OVERVIEW
+                  schema: MART_OPEN_TRANSPORT
+                  domain: TABLE
+          data_preview:
+            has_pii: false
+          usage_examples:
+            - title: "Average delay by line"
+              description: "Lines with positive average delay in minutes."
+              query: >
+                SELECT line_text, COUNT(*) AS departures, ROUND(AVG(delay_minutes), 2) AS avg_delay_min
+                FROM SFG_LOGISTICS.MART_OPEN_TRANSPORT.MART_SWISS_RAIL_OVERVIEW
+                WHERE delay_minutes > 0
+                GROUP BY 1
+                ORDER BY avg_delay_min DESC
+                LIMIT 20;
+            - title: "Departures by data source"
+              description: "Row counts split by upstream feed."
+              query: >
+                SELECT data_source, COUNT(*) AS row_count
+                FROM SFG_LOGISTICS.MART_OPEN_TRANSPORT.MART_SWISS_RAIL_OVERVIEW
+                GROUP BY 1
+                ORDER BY row_count DESC;
           organization_targets:
+            discovery:
+              - all_internal_accounts: true
             access:
               - all_internal_accounts: true
+          support_contact: "anton.huck+lgs@snowflake.com"
+          approver_contact: "anton.huck+lgs@snowflake.com"
           locations:
             access_regions:
               - name: "ALL"

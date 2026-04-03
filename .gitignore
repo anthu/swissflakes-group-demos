@@ -24,6 +24,7 @@ logs/
 # DCM build artifacts
 **/dcm/out/
 data_products/*/out/
+data_products/*/summary/
 
 # Openflow
 openflow/*.json.credentials

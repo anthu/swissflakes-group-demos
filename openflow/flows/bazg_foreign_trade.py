@@ -6,13 +6,12 @@ Pattern: ZIP CSV (download ZIP archive, extract CSV, stream as VARIANT)
 BAZG (Swiss Federal Office for Customs and Border Security) publishes
 import/export trade data as CSV files in ZIP archives, updated monthly.
 
-The base builder's single InvokeHTTP fetches the ZIP. A future build_fetch_chain()
-override will add UnpackContent to extract the CSV before Jolt transformation.
-For now, the ZIP metadata URL is used to capture available datasets.
-
-Learnings from Flows 1-6:
-- ZIP extraction requires UnpackContent processor between InvokeHTTP and Jolt
-- Monthly schedules need longer flowfile expiry on success funnels
+STATUS (March 2026): FLOW STOPPED — API endpoint gone.
+The original endpoint ``ocean.nivel.bazg.admin.ch/open-data-reports/``
+returns 404. BAZG migrated to ``datahub.nivel.bazg.admin.ch`` and the
+SwissImpex dashboard. No direct replacement REST API has been identified.
+The NiFi process group is stopped and the Snowflake table truncated.
+Re-enable once a new open-data API is available.
 """
 import argparse
 
