@@ -69,8 +69,13 @@ jobs:
     - name: Resolve PR number in manifest
       run: sed -i "s/___PR_NUMBER___/${{ env.PR_NUMBER }}/g" ${{ env.DCM_PROJECT_PATH }}manifest.yml
 
-    - name: Setup SnowCLI
-      run: pip install git+https://github.com/snowflakedb/snowflake-cli.git
+    - name: Setup Python + SnowCLI
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+        cache-dependency-path: .github/requirements-snowcli.txt
+    - run: pip install -r .github/requirements-snowcli.txt
 
     - name: Create DCM project and run PLAN
       id: plan
@@ -182,8 +187,13 @@ jobs:
     - name: Resolve PR number in manifest
       run: sed -i "s/___PR_NUMBER___/${{ env.PR_NUMBER }}/g" ${{ env.DCM_PROJECT_PATH }}manifest.yml
 
-    - name: Setup SnowCLI
-      run: pip install git+https://github.com/snowflakedb/snowflake-cli.git
+    - name: Setup Python + SnowCLI
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+        cache-dependency-path: .github/requirements-snowcli.txt
+    - run: pip install -r .github/requirements-snowcli.txt
 
     - name: Deploy ephemeral environment
       run: |
@@ -216,8 +226,13 @@ jobs:
     - name: Resolve PR number in manifest
       run: sed -i "s/___PR_NUMBER___/${{ env.PR_NUMBER }}/g" ${{ env.DCM_PROJECT_PATH }}manifest.yml
 
-    - name: Setup SnowCLI
-      run: pip install git+https://github.com/snowflakedb/snowflake-cli.git
+    - name: Setup Python + SnowCLI
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+        cache-dependency-path: .github/requirements-snowcli.txt
+    - run: pip install -r .github/requirements-snowcli.txt
 
     - name: Refresh Dynamic Tables
       run: |
@@ -251,8 +266,13 @@ jobs:
     - name: Resolve PR number in manifest
       run: sed -i "s/___PR_NUMBER___/${{ env.PR_NUMBER }}/g" ${{ env.DCM_PROJECT_PATH }}manifest.yml
 
-    - name: Setup SnowCLI
-      run: pip install git+https://github.com/snowflakedb/snowflake-cli.git
+    - name: Setup Python + SnowCLI
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+        cache-dependency-path: .github/requirements-snowcli.txt
+    - run: pip install -r .github/requirements-snowcli.txt
 
     - name: Test Data Quality Expectations
       run: |
