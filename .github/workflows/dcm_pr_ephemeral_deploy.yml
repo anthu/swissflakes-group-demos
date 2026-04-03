@@ -91,7 +91,7 @@ jobs:
         if snow dcm plan --target PR_EPHEMERAL --save-output -x; then
           echo "### DCM Plan for PR #${{ env.PR_NUMBER }} successful" >> $GITHUB_STEP_SUMMARY
 
-          PLAN_METADATA_FILE="out/plan/plan_metadata.json"
+          PLAN_METADATA_FILE="out/plan_metadata.json"
           for OP_TYPE in CREATE ALTER DROP; do
             case $OP_TYPE in CREATE) OP_ICON="[CREATE]";; ALTER) OP_ICON="[ALTER]";; DROP) OP_ICON="[DROP]";; esac
             OP_COUNT=$(jq --arg OP_TYPE "$OP_TYPE" '.ddlChangeLog.operations[] | select(.operationType == $OP_TYPE)' "$PLAN_METADATA_FILE" | jq -s 'length')
@@ -112,7 +112,7 @@ jobs:
         else
           echo "### DCM Plan for PR #${{ env.PR_NUMBER }} failed" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          jq -r '.error' out/plan/plan_metadata.json >> $GITHUB_STEP_SUMMARY
+          jq -r '.error' out/plan_metadata.json >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
           cp $GITHUB_STEP_SUMMARY summary/plan-summary.md
@@ -124,7 +124,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: pr-plan-output
-        path: ${{ env.DCM_PROJECT_PATH }}out/plan/plan_metadata.json
+        path: ${{ env.DCM_PROJECT_PATH }}out/plan_metadata.json
 
     - name: Upload PLAN summary
       if: always()
@@ -141,11 +141,11 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: pr-plan-output
-        path: ${{ env.DCM_PROJECT_PATH }}out/plan/
+        path: ./
 
     - name: Check for destructive commands
       run: |
-        PLAN_FILE="${{ env.DCM_PROJECT_PATH }}out/plan/plan_metadata.json"
+        PLAN_FILE="plan_metadata.json"
         if [ ! -f "$PLAN_FILE" ]; then
           echo "### Plan output file not found!" >> $GITHUB_STEP_SUMMARY
           exit 1
