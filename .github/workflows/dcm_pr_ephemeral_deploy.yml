@@ -201,7 +201,8 @@ jobs:
         cd ./$DCM_PROJECT_PATH
 
         set +e
-        snow dcm deploy --target PR_EPHEMERAL --alias "pr-${{ env.PR_NUMBER }}" -x 2>&1 | tee /tmp/deploy_output.txt
+        SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+        snow dcm deploy --target PR_EPHEMERAL --alias "pr-${{ env.PR_NUMBER }}-run${{ github.run_number }}-${SHORT_SHA}" -x 2>&1 | tee /tmp/deploy_output.txt
         EXIT_CODE=${PIPESTATUS[0]}
         set -e
 
