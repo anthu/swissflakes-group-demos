@@ -19,6 +19,7 @@ env:
   SNOWFLAKE_ACCOUNT: ${{ vars.SNOWFLAKE_ACCOUNT }}
   SNOWFLAKE_CI_ROLE: ${{ vars.SNOWFLAKE_CI_ROLE }}
   PR_NUMBER: ${{ github.event.pull_request.number || github.event.inputs.pr_number }}
+  SNOWFLAKE_WAREHOUSE: ${{ vars.SNOWFLAKE_WAREHOUSE }}
 
 permissions:
   id-token: write
