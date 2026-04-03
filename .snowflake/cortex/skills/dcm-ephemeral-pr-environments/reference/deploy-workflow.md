@@ -1,3 +1,10 @@
+# Deploy Workflow Template
+
+Complete GitHub Actions workflow for deploying DCM ephemeral environments on PR open/update.
+
+## File: `.github/workflows/dcm_pr_ephemeral_deploy.yml`
+
+```yaml
 name: DCM PR Ephemeral Deploy
 
 on:
@@ -5,12 +12,11 @@ on:
     types: [opened, synchronize, reopened]
     branches: ["main"]
     paths:
-      - 'data_products/**'
-
+      - '<DCM_PROJECT_PATH>/**'
   workflow_dispatch:
 
 env:
-  DCM_PROJECT_PATH: data_products/sfg_logistics/
+  DCM_PROJECT_PATH: <DCM_PROJECT_PATH>/
   SNOWFLAKE_PASSWORD: ${{ secrets.DEPLOYER_PAT }}
   SNOWFLAKE_USER: ${{ vars.SNOWFLAKE_USER }}
   SNOWFLAKE_ACCOUNT: ${{ vars.SNOWFLAKE_ACCOUNT }}
@@ -33,23 +39,18 @@ jobs:
     steps:
     - name: Clone Repo
       uses: actions/checkout@v4
-
     - name: Get targets from manifest
       id: get_targets
       run: |
         MANIFEST_PATH="${{ env.DCM_PROJECT_PATH }}manifest.yml"
         sed -i "s/___PR_NUMBER___/${{ env.PR_NUMBER }}/g" "$MANIFEST_PATH"
-
         echo "PR Ephemeral target for PR #${{ env.PR_NUMBER }}" >> $GITHUB_STEP_SUMMARY
-
         ACCOUNT=$(yq eval '.targets.PR_EPHEMERAL.account_identifier' "$MANIFEST_PATH" | sed 's/"//g' | sed "s/'//g")
         ROLE=$(yq eval '.targets.PR_EPHEMERAL.project_owner' "$MANIFEST_PATH" | sed 's/"//g' | sed "s/'//g")
         PROJECT_NAME=$(yq eval '.targets.PR_EPHEMERAL.project_name' "$MANIFEST_PATH" | sed 's/"//g' | sed "s/'//g")
-
         echo "account=$ACCOUNT" >> $GITHUB_OUTPUT
         echo "role=$ROLE" >> $GITHUB_OUTPUT
         echo "project_name=$PROJECT_NAME" >> $GITHUB_OUTPUT
-
         {
           echo "**PR_EPHEMERAL:**"
           echo "- Snowflake account: \`$ACCOUNT\`"
@@ -65,10 +66,8 @@ jobs:
     steps:
     - name: Clone Repo
       uses: actions/checkout@v4
-
     - name: Resolve PR number in manifest
       run: sed -i "s/___PR_NUMBER___/${{ env.PR_NUMBER }}/g" ${{ env.DCM_PROJECT_PATH }}manifest.yml
-
     - name: Setup Python + SnowCLI
       uses: actions/setup-python@v5
       with:
@@ -76,15 +75,16 @@ jobs:
         cache: 'pip'
         cache-dependency-path: .github/requirements-snowcli.txt
     - run: pip install -r .github/requirements-snowcli.txt
-
-    - name: Create DCM project and run PLAN
+    - name: Clone source DB and run PLAN
       id: plan
       run: |
         cd ./$DCM_PROJECT_PATH
-
-        DB_NAME="SFG_LOGISTICS_PR${{ env.PR_NUMBER }}"
+        # --- REPLACE <SOURCE_DB> with your actual source database name ---
+        DB_NAME="<SOURCE_DB>_PR${{ env.PR_NUMBER }}"
         CI_ROLE="${{ env.SNOWFLAKE_CI_ROLE }}"
-        snow sql -q "CREATE DATABASE IF NOT EXISTS ${DB_NAME} CLONE SFG_LOGISTICS" -x
+
+        # Zero-copy clone + ownership transfer
+        snow sql -q "CREATE DATABASE IF NOT EXISTS ${DB_NAME} CLONE <SOURCE_DB>" -x
         snow sql -q "GRANT OWNERSHIP ON DATABASE ${DB_NAME} TO ROLE ${CI_ROLE} COPY CURRENT GRANTS" -x
         snow sql -q "GRANT OWNERSHIP ON ALL SCHEMAS IN DATABASE ${DB_NAME} TO ROLE ${CI_ROLE} COPY CURRENT GRANTS" -x
         snow sql -q "GRANT OWNERSHIP ON ALL TABLES IN DATABASE ${DB_NAME} TO ROLE ${CI_ROLE} COPY CURRENT GRANTS" -x
@@ -92,13 +92,11 @@ jobs:
         snow sql -q "GRANT OWNERSHIP ON ALL DYNAMIC TABLES IN DATABASE ${DB_NAME} TO ROLE ${CI_ROLE} COPY CURRENT GRANTS" -x
         snow sql -q "GRANT OWNERSHIP ON ALL STAGES IN DATABASE ${DB_NAME} TO ROLE ${CI_ROLE} COPY CURRENT GRANTS" -x
 
+        # Create DCM project and plan
         snow dcm create --target PR_EPHEMERAL --if-not-exists -x
-
         mkdir -p summary
-
         if snow dcm plan --target PR_EPHEMERAL --save-output -x; then
           echo "### DCM Plan for PR #${{ env.PR_NUMBER }} successful" >> $GITHUB_STEP_SUMMARY
-
           PLAN_METADATA_FILE="out/plan.json"
           for OP_TYPE in CREATE ALTER DROP; do
             case $OP_TYPE in CREATE) OP_ICON="[CREATE]";; ALTER) OP_ICON="[ALTER]";; DROP) OP_ICON="[DROP]";; esac
@@ -114,26 +112,21 @@ jobs:
               echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
             fi
           done
-
           cp $GITHUB_STEP_SUMMARY summary/plan-summary.md
-
         else
           echo "### DCM Plan for PR #${{ env.PR_NUMBER }} failed" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           jq -r '.error // empty' out/plan.json >> $GITHUB_STEP_SUMMARY 2>/dev/null || true
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-
           cp $GITHUB_STEP_SUMMARY summary/plan-summary.md
           exit 1
         fi
-
     - name: Upload PLAN output
       if: always()
       uses: actions/upload-artifact@v4
       with:
         name: pr-plan-output
         path: ${{ env.DCM_PROJECT_PATH }}out/plan.json
-
     - name: Upload PLAN summary
       if: always()
       uses: actions/upload-artifact@v4
@@ -150,16 +143,13 @@ jobs:
       with:
         name: pr-plan-output
         path: ./
-
     - name: Check for destructive commands
       run: |
         PLAN_FILE="plan.json"
         if [ ! -f "$PLAN_FILE" ]; then
           echo "### Plan output file not found!" >> $GITHUB_STEP_SUMMARY
-          ls -laR .
           exit 1
         fi
-
         DESTRUCTIVE_COMMANDS=$(jq -c '[.changeset[] | select(.type == "DROP" and (.object_id.domain | IN("DATABASE", "SCHEMA", "TABLE", "STAGE")))]' "$PLAN_FILE")
         TOTAL_DROPS=$(echo "$DESTRUCTIVE_COMMANDS" | jq 'length')
         if [[ $TOTAL_DROPS -gt 0 ]]; then
@@ -167,7 +157,6 @@ jobs:
           SCHEMA_DROPS=$(echo "$DESTRUCTIVE_COMMANDS" | jq '[.[] | select(.object_id.domain == "SCHEMA")] | length')
           TABLE_DROPS=$(echo "$DESTRUCTIVE_COMMANDS" | jq '[.[] | select(.object_id.domain == "TABLE")] | length')
           STAGE_DROPS=$(echo "$DESTRUCTIVE_COMMANDS" | jq '[.[] | select(.object_id.domain == "STAGE")] | length')
-
           {
             echo "### PLAN contains DROP commands"
             echo "The plan contains **${TOTAL_DROPS}** DROP operation(s):"
@@ -178,7 +167,6 @@ jobs:
             if [[ $STAGE_DROPS -gt 0 ]]; then echo "- Stages: ${STAGE_DROPS}"; fi
             echo "\`\`\`"
           } >> "$GITHUB_STEP_SUMMARY"
-
           exit 1
         else
           echo "### No destructive DROP operations found" >> $GITHUB_STEP_SUMMARY
@@ -192,10 +180,8 @@ jobs:
     steps:
     - name: Clone Repo
       uses: actions/checkout@v4
-
     - name: Resolve PR number in manifest
       run: sed -i "s/___PR_NUMBER___/${{ env.PR_NUMBER }}/g" ${{ env.DCM_PROJECT_PATH }}manifest.yml
-
     - name: Setup Python + SnowCLI
       uses: actions/setup-python@v5
       with:
@@ -203,17 +189,14 @@ jobs:
         cache: 'pip'
         cache-dependency-path: .github/requirements-snowcli.txt
     - run: pip install -r .github/requirements-snowcli.txt
-
     - name: Deploy ephemeral environment
       run: |
         cd ./$DCM_PROJECT_PATH
-
         set +e
         SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
         snow dcm deploy --target PR_EPHEMERAL --alias "pr-${{ env.PR_NUMBER }}-run${{ github.run_number }}-${SHORT_SHA}" -x 2>&1 | tee /tmp/deploy_output.txt
         EXIT_CODE=${PIPESTATUS[0]}
         set -e
-
         if [ $EXIT_CODE -eq 0 ]; then
           echo "### DCM Deploy for PR #${{ env.PR_NUMBER }} successful" >> $GITHUB_STEP_SUMMARY
         else
@@ -234,10 +217,8 @@ jobs:
     steps:
     - name: Clone Repo
       uses: actions/checkout@v4
-
     - name: Resolve PR number in manifest
       run: sed -i "s/___PR_NUMBER___/${{ env.PR_NUMBER }}/g" ${{ env.DCM_PROJECT_PATH }}manifest.yml
-
     - name: Setup Python + SnowCLI
       uses: actions/setup-python@v5
       with:
@@ -245,7 +226,6 @@ jobs:
         cache: 'pip'
         cache-dependency-path: .github/requirements-snowcli.txt
     - run: pip install -r .github/requirements-snowcli.txt
-
     - name: Refresh Dynamic Tables
       run: |
         cd ./$DCM_PROJECT_PATH
@@ -253,7 +233,6 @@ jobs:
         REFRESH_OUTPUT=$(snow dcm refresh --target PR_EPHEMERAL -x 2>&1)
         EXIT_CODE=$?
         set -e
-
         if [ $EXIT_CODE -eq 0 ]; then
           echo "### Dynamic Tables Refresh Successful" >> $GITHUB_STEP_SUMMARY
         else
@@ -274,10 +253,8 @@ jobs:
     steps:
     - name: Clone Repo
       uses: actions/checkout@v4
-
     - name: Resolve PR number in manifest
       run: sed -i "s/___PR_NUMBER___/${{ env.PR_NUMBER }}/g" ${{ env.DCM_PROJECT_PATH }}manifest.yml
-
     - name: Setup Python + SnowCLI
       uses: actions/setup-python@v5
       with:
@@ -285,7 +262,6 @@ jobs:
         cache: 'pip'
         cache-dependency-path: .github/requirements-snowcli.txt
     - run: pip install -r .github/requirements-snowcli.txt
-
     - name: Test Data Quality Expectations
       run: |
         cd ./$DCM_PROJECT_PATH
@@ -293,7 +269,6 @@ jobs:
         TEST_OUTPUT=$(snow dcm test --target PR_EPHEMERAL -x 2>&1)
         EXIT_CODE=$?
         set -e
-
         if [ $EXIT_CODE -eq 0 ]; then
           {
             echo "### Data Quality Tests Passed"
@@ -322,7 +297,6 @@ jobs:
         with:
           pattern: '*-summary'
           merge-multiple: true
-
       - name: Post summary to PR
         uses: actions/github-script@v7
         env:
@@ -334,7 +308,6 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-
             const getEmoji = (result) => {
                 const r = (result || '').toLowerCase();
                 if (r === 'success') return 'PASS';
@@ -342,7 +315,6 @@ jobs:
                 if (r === 'skipped') return 'SKIP';
                 return 'WARN';
             };
-
             const jobs = {
               'Plan': process.env.PLAN_RESULT,
               'Drop Detection': process.env.DROP_DETECTION_RESULT,
@@ -350,15 +322,12 @@ jobs:
               'Refresh Dynamic Tables': process.env.REFRESH_RESULT,
               'Test Expectations': process.env.TEST_RESULT
             };
-
             const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
             let comment = `### DCM Ephemeral Environment - PR #${context.issue.number}\n\n`;
             comment += `| Job | Result |\n|-----|--------|\n`;
-
             for (const [job, result] of Object.entries(jobs)) {
               comment += `| ${job} | ${getEmoji(result)} ${result || 'n/a'} |\n`;
             }
-
             let planSummary = '';
             try {
               planSummary = fs.readFileSync('plan-summary.md', 'utf8');
@@ -366,9 +335,7 @@ jobs:
             } catch (error) {
               comment += `\nCould not load plan summary.\n`;
             }
-
             comment += `\n[View full workflow run](${runUrl})`;
-
             if (context.eventName === 'pull_request') {
               await github.rest.issues.createComment({
                 issue_number: context.issue.number,
@@ -377,3 +344,10 @@ jobs:
                 body: comment
               });
             }
+```
+
+## Customization Points
+
+Replace these placeholders before committing:
+- `<DCM_PROJECT_PATH>` — relative path to DCM project (e.g., `data_products/sfg_logistics`)
+- `<SOURCE_DB>` — production database name to clone from (e.g., `SFG_LOGISTICS`)
