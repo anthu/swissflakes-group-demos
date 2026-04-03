@@ -37,6 +37,7 @@ jobs:
       id: get_targets
       run: |
         MANIFEST_PATH="${{ env.DCM_PROJECT_PATH }}manifest.yml"
+        sed -i "s/___PR_NUMBER___/${{ env.PR_NUMBER }}/g" "$MANIFEST_PATH"
 
         echo "PR Ephemeral target for PR #${{ env.PR_NUMBER }}" >> $GITHUB_STEP_SUMMARY
 
@@ -63,6 +64,9 @@ jobs:
     steps:
     - name: Clone Repo
       uses: actions/checkout@v4
+
+    - name: Resolve PR number in manifest
+      run: sed -i "s/___PR_NUMBER___/${{ env.PR_NUMBER }}/g" ${{ env.DCM_PROJECT_PATH }}manifest.yml
 
     - name: Setup SnowCLI
       run: pip install git+https://github.com/snowflakedb/snowflake-cli.git
@@ -171,6 +175,9 @@ jobs:
     - name: Clone Repo
       uses: actions/checkout@v4
 
+    - name: Resolve PR number in manifest
+      run: sed -i "s/___PR_NUMBER___/${{ env.PR_NUMBER }}/g" ${{ env.DCM_PROJECT_PATH }}manifest.yml
+
     - name: Setup SnowCLI
       run: pip install git+https://github.com/snowflakedb/snowflake-cli.git
 
@@ -201,6 +208,9 @@ jobs:
     steps:
     - name: Clone Repo
       uses: actions/checkout@v4
+
+    - name: Resolve PR number in manifest
+      run: sed -i "s/___PR_NUMBER___/${{ env.PR_NUMBER }}/g" ${{ env.DCM_PROJECT_PATH }}manifest.yml
 
     - name: Setup SnowCLI
       run: pip install git+https://github.com/snowflakedb/snowflake-cli.git
@@ -233,6 +243,9 @@ jobs:
     steps:
     - name: Clone Repo
       uses: actions/checkout@v4
+
+    - name: Resolve PR number in manifest
+      run: sed -i "s/___PR_NUMBER___/${{ env.PR_NUMBER }}/g" ${{ env.DCM_PROJECT_PATH }}manifest.yml
 
     - name: Setup SnowCLI
       run: pip install git+https://github.com/snowflakedb/snowflake-cli.git

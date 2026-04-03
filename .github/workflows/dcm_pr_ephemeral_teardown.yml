@@ -37,6 +37,9 @@ jobs:
     - name: Setup SnowCLI
       run: pip install git+https://github.com/snowflakedb/snowflake-cli.git
 
+    - name: Resolve PR number in manifest
+      run: sed -i "s/___PR_NUMBER___/${{ env.PR_NUMBER }}/g" ${{ env.DCM_PROJECT_PATH }}manifest.yml
+
     - name: Drop DCM project
       run: |
         cd ./$DCM_PROJECT_PATH

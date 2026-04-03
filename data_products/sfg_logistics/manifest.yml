@@ -15,7 +15,7 @@ templating:
     PROD:
       env_suffix: ""
     PR_EPHEMERAL:
-      env_suffix: "_PR{{ env_var('PR_NUMBER') }}"
+      env_suffix: "_PR___PR_NUMBER___"
 
 targets:
   DEV:
@@ -34,7 +34,7 @@ targets:
 
   PR_EPHEMERAL:
     account_identifier: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
-    project_name: "SFG_LOGISTICS_PR{{ env_var('PR_NUMBER') }}.DCM.DP_SFG_LOGISTICS_PR{{ env_var('PR_NUMBER') }}"
+    project_name: "SFG_LOGISTICS___PR_NUMBER___.DCM.DP_SFG_LOGISTICS___PR_NUMBER___"
     project_owner: "{{ env_var('SNOWFLAKE_CI_ROLE') }}"
     project_comment: "Ephemeral PR environment for {{dp_name}}"
     templating_config: PR_EPHEMERAL
