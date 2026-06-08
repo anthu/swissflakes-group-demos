@@ -28,3 +28,13 @@ output "resource_monitor_names" {
     cortex = snowflake_resource_monitor.cortex.name
   }
 }
+
+output "database_names" {
+  description = "Names of all domain databases"
+  value       = { for k, v in snowflake_database.domain : k => v.name }
+}
+
+output "dcm_schema_fqns" {
+  description = "Fully qualified DCM schema names"
+  value       = { for k, v in snowflake_schema.dcm : k => "${v.database}.${v.name}" }
+}

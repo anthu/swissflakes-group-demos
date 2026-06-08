@@ -90,6 +90,7 @@ These addresses appear only in listing manifests (explicit exception to avoiding
 - DCM projects live in `data_products/{name}/` (flat, no dcm/ subfolder)
 - Jinja templating with `{{env_suffix}}`, `{{dp_name}}`, `{{dp_type}}` from manifest.yml
 - DEV/PROD targets: `{{env_suffix}}` = `_DEV` or `""`
+- **Database bootstrap**: Terraform creates all 4 domain databases + DCM schemas from `infrastructure/terraform/databases.yml`
 - Commands: `snow dcm create {FQN} --if-not-exists -c <connection>`, `snow dcm deploy --from data_products/{name} -c <connection>`
 - Projects: `{DB}.DCM.DP_{DB}` (infrastructure) + `{DB}.DCM.DBT_{DP}` (dbt per sub-DP)
 - Platform: `SFG_ADMIN.DCM.PLATFORM`
@@ -199,7 +200,8 @@ openflow/                                -- Openflow flow scripts (open data ing
 openflow/shared/flow_builder.py          -- Base class for KuCoin v2 pattern
 openflow/flows/                          -- Individual flow scripts (one per source)
 openflow/deploy.sh                       -- Orchestrator: deploy all flows sequentially
-infrastructure/terraform/                -- Security policies, monitors, EAI, grants
+infrastructure/terraform/                -- Security policies, monitors, EAI, grants, database bootstrap
+infrastructure/terraform/databases.yml   -- YAML source of truth for domain databases
 tests/                                   -- DCM validation tests
 docs/                                    -- Workshop guide
 ```
