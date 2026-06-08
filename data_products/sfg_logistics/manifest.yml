@@ -8,6 +8,7 @@ templating:
     dp_type: "DOMAIN"
     dp_name: "SFG_LOGISTICS"
     dp_description: "SwissFlakes Logistics AG domain - commerce and transport data products"
+    dp_version: "1.1"
 
   configurations:
     DEV:

@@ -1,0 +1,116 @@
+name: DCM PR Plan
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: ["main"]
+    paths:
+      - 'data_products/**'
+
+env:
+  DCM_PROJECT_PATH: data_products/sfg_logistics/
+  SNOWFLAKE_PASSWORD: ${{ secrets.DEPLOYER_PAT }}
+  SNOWFLAKE_USER: ${{ vars.SNOWFLAKE_USER }}
+  SNOWFLAKE_ACCOUNT: ${{ vars.SNOWFLAKE_ACCOUNT }}
+  SNOWFLAKE_WAREHOUSE: ${{ vars.SNOWFLAKE_WAREHOUSE }}
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  PLAN:
+    runs-on: ubuntu-latest
+    env:
+      SNOWFLAKE_ROLE: ${{ vars.SNOWFLAKE_CI_ROLE }}
+    steps:
+    - name: Clone Repo
+      uses: actions/checkout@v6
+
+    - name: Setup Python + SnowCLI
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+        cache-dependency-path: .github/requirements-snowcli.txt
+    - run: pip install -r .github/requirements-snowcli.txt
+
+    - name: Run DCM Plan against PROD
+      id: plan
+      run: |
+        cd ./$DCM_PROJECT_PATH
+        if snow dcm plan --target PROD --save-output -x; then
+          echo "plan_status=success" >> $GITHUB_OUTPUT
+        else
+          echo "plan_status=failure" >> $GITHUB_OUTPUT
+          exit 1
+        fi
+
+    - name: Upload plan artifact
+      if: always()
+      uses: actions/upload-artifact@v7
+      with:
+        name: pr-plan-output
+        path: ${{ env.DCM_PROJECT_PATH }}out/plan.json
+
+    - name: Post plan comment on PR
+      if: always()
+      uses: actions/github-script@v8
+      with:
+        script: |
+          const fs = require('fs');
+          const planFile = '${{ env.DCM_PROJECT_PATH }}out/plan.json';
+          const planStatus = '${{ steps.plan.outputs.plan_status }}';
+          const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+          const statusIcon = planStatus === 'success' ? '\u2705' : '\u274c';
+
+          let body = `## DCM Plan (PROD) -- PR #${context.issue.number}\n\n`;
+
+          try {
+            const plan = JSON.parse(fs.readFileSync(planFile, 'utf8'));
+            const changeset = plan.changeset || [];
+            const total = changeset.length;
+
+            const counts = { CREATE: 0, ALTER: 0, DROP: 0 };
+            changeset.forEach(c => { if (counts[c.type] !== undefined) counts[c.type]++; });
+
+            body += `| Metric | Value |\n|--------|-------|\n`;
+            body += `| Status | ${statusIcon} ${planStatus.toUpperCase()} |\n`;
+            body += `| Target | \`SFG_LOGISTICS.DCM.DP_SFG_LOGISTICS\` |\n`;
+            body += `| Total changes | ${total} |\n\n`;
+
+            if (total > 0) {
+              body += `| Operation | Count |\n|-----------|-------|\n`;
+              for (const [op, count] of Object.entries(counts)) {
+                if (count > 0) body += `| ${op} | ${count} |\n`;
+              }
+              body += `\n`;
+
+              body += `<details>\n<summary>Detailed changeset (${total} objects)</summary>\n\n`;
+              body += `| Operation | Domain | Object |\n|-----------|--------|--------|\n`;
+              changeset.forEach(c => {
+                body += `| ${c.type} | ${c.object_id.domain} | \`${c.object_id.name}\` |\n`;
+              });
+              body += `\n</details>\n`;
+            } else {
+              body += `_No changes detected._\n`;
+            }
+          } catch (e) {
+            if (planStatus === 'failure') {
+              body += `Plan execution failed. Check workflow logs for details.\n`;
+            } else {
+              body += `Could not parse plan output: ${e.message}\n`;
+            }
+          }
+
+          body += `\n---\n`;
+          body += `> To deploy an ephemeral test environment, comment \`/deploy-ephemeral\` on this PR.\n`;
+          body += `> [View workflow run](${runUrl})`;
+
+          await github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: body
+          });

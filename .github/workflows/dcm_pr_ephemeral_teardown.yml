@@ -33,10 +33,10 @@ jobs:
       SNOWFLAKE_ROLE: ${{ vars.SNOWFLAKE_CI_ROLE }}
     steps:
     - name: Clone Repo
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Setup Python + SnowCLI
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: '3.11'
         cache: 'pip'
@@ -93,25 +93,27 @@ jobs:
       pull-requests: write
     steps:
       - name: Post cleanup confirmation
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         env:
           TEARDOWN_RESULT: ${{ needs.TEARDOWN.result }}
         with:
           script: |
             const result = process.env.TEARDOWN_RESULT;
-            const status = result === 'success' ? 'PASS' : 'FAIL';
+            const icon = result === 'success' ? '\u2705' : '\u274c';
             const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const prNumber = context.issue.number;
 
-            let comment = `### DCM Ephemeral Teardown - PR #${context.issue.number}\n\n`;
-            comment += `| Action | Result |\n|--------|--------|\n`;
-            comment += `| Drop DCM project | ${status} |\n`;
-            comment += `| Drop database SFG_LOGISTICS_PR${context.issue.number} | ${status} |\n`;
-            comment += `| Drop ephemeral roles | ${status} |\n`;
-            comment += `\n[View full workflow run](${runUrl})`;
+            let body = `## DCM Ephemeral Teardown -- PR #${prNumber}\n\n`;
+            body += `| Action | Result |\n|--------|--------|\n`;
+            body += `| Drop DCM project | ${icon} ${result} |\n`;
+            body += `| Drop database \`SFG_LOGISTICS_PR${prNumber}\` | ${icon} ${result} |\n`;
+            body += `| Drop ephemeral roles | ${icon} ${result} |\n`;
+            body += `\n---\n`;
+            body += `> [View workflow run](${runUrl})`;
 
             await github.rest.issues.createComment({
-              issue_number: context.issue.number,
+              issue_number: prNumber,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: comment
+              body: body
             });
