@@ -1,3 +1,13 @@
+-- Domain owner roles (owned by USERADMIN, managed centrally by admin project)
+DEFINE ROLE DP_SFG_LOGISTICS{{env_suffix}}_OWNER
+    COMMENT = 'Full control for SFG_LOGISTICS domain';
+
+DEFINE ROLE DP_SFG_ENTERPRISE{{env_suffix}}_OWNER
+    COMMENT = 'Full control for SFG_ENTERPRISE domain';
+
+DEFINE ROLE DP_SFG_PAY{{env_suffix}}_OWNER
+    COMMENT = 'Full control for SFG_PAY domain';
+
 DEFINE ROLE SWISSFLAKES_PLATFORM_ADMIN
     COMMENT = 'Platform administrator - full access to all data products';
 

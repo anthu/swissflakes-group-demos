@@ -10,9 +10,6 @@ DEFINE TABLE SFG_ENTERPRISE{{env_suffix}}.RAW_WEATHER.METEOSWISS_MEASUREMENTS (R
 DEFINE SCHEMA SFG_ENTERPRISE{{env_suffix}}.MART_{{dp}};
 {% endfor %}
 
-DEFINE ROLE DP_SFG_ENTERPRISE{{env_suffix}}_OWNER
-    COMMENT = 'Full control for {{dp_name}} domain';
-
 {% for dp in ['FULFILLMENT', 'CUSTOMER_360', 'REVENUE_ANALYTICS', 'COMPLIANCE'] %}
 DEFINE ROLE DP_SFG_ENTERPRISE{{env_suffix}}_{{dp}}_READER
     COMMENT = 'MART read-only for {{dp}} in {{dp_name}}';
