@@ -1,0 +1,12 @@
+databases:
+  - name: SFG_ADMIN
+    description: "SwissFlakes Group platform - governance, agents, tags, warehouses"
+
+  - name: SFG_LOGISTICS
+    description: "SwissFlakes Logistics AG - freight, fleet, customers, orders"
+
+  - name: SFG_PAY
+    description: "SwissFlakes Pay AG - payments, merchants"
+
+  - name: SFG_ENTERPRISE
+    description: "SwissFlakes Group enterprise analytics - fulfillment, compliance, revenue"
