@@ -13,9 +13,6 @@ DEFINE SCHEMA SFG_PAY{{env_suffix}}.MART_{{dp}};
 -- which would invalidate SSV2 pipe bindings.
 DEFINE TABLE SFG_PAY{{env_suffix}}.RAW_TRANSACTIONS.ECB_EXCHANGE_RATES (RAW VARIANT);
 
-DEFINE ROLE DP_SFG_PAY{{env_suffix}}_OWNER
-    COMMENT = 'Full control for {{dp_name}} domain';
-
 {% for dp in ['TRANSACTIONS', 'MERCHANTS'] %}
 DEFINE ROLE DP_SFG_PAY{{env_suffix}}_{{dp}}_WRITER
     COMMENT = 'RAW + STG read/write for {{dp}} in {{dp_name}}';

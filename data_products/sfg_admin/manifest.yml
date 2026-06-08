@@ -26,6 +26,6 @@ targets:
   PROD:
     account_identifier: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
     project_name: 'SFG_ADMIN.DCM.PLATFORM'
-    project_owner: SWISSFLAKES_PLATFORM_ADMIN
+    project_owner: ACCOUNTADMIN
     project_comment: "{{dp_type}}: {{dp_description}}"
     templating_config: PROD
